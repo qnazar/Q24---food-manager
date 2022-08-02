@@ -1,19 +1,22 @@
-from flask import Flask, render_template, url_for, flash, redirect
+from flask import Flask, render_template, url_for, flash, redirect, request
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_required, login_user, logout_user
 
-from models import db, User
+from models import db, User, Person
 from config import *
 from texts_ua import Texts
-from forms import RegisterForm, LoginForm
-
+from forms import RegisterForm, LoginForm, PersonalInfo
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{PG_USER}:{PG_PSSWRD}@localhost/{PG_DATABASE}"
 db.init_app(app)
+
+with app.app_context():
+    db.create_all()
+
 mail = Mail(app)
 s = URLSafeTimedSerializer('SomethingSecret')
 
@@ -31,10 +34,10 @@ def get_db():
     db.create_all()
 
 
-@app.teardown_appcontext
-def close_contest(error):
-    """Closing DB after session"""
-    db.close_all_sessions()
+# @app.teardown_appcontext
+# def close_contest(error):
+#     """Closing DB after session"""
+#     db.close_all_sessions()
 
 
 @app.route('/')
@@ -99,11 +102,19 @@ def logout():
     flash('You have been logout')
     return redirect(url_for('login'))
 
-@app.route('/user/<id>')
+
+@app.route('/user/<id>', methods=['GET', 'POST'])
 @login_required
 def user(id):
+    form = PersonalInfo()
     user = User.query.filter_by(id=id).first()
-    return render_template('user.html', title='Profile', user=user)
+    if form.validate_on_submit():
+        first_name = form.first_name.data
+        last_name = form.last_name.data
+        person = Person(first_name=first_name, last_name=last_name)
+        db.session.add(person)
+        db.session.commit()
+    return render_template('user.html', title='Profile', user=user, form=form)
 
 
 @app.route('/confirm_email/<token>')

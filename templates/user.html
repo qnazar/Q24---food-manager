@@ -11,4 +11,21 @@
     <h4>{{ user.registration_date }}</h4>
 
     <a href="{{ url_for('logout') }}">Logout</a>
+
+    <div class="shadow-lg p-3 mb-5 bg-body rounded">
+    <form method="post">
+    {{ form.hidden_tag() }}
+
+    {{ form.first_name.label(class="form-label") }}
+    {{ form.first_name(class="form-control") }}
+    <br>
+    {{ form.last_name.label(class="form-label") }}
+    {{ form.last_name(class="form-control") }}
+    <br>
+
+    {{ form.submit(class="btn btn-secondary") }}
+
+    </form>
+    </div>
+
 {% endblock %}

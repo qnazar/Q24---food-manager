@@ -1,5 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 import datetime
+
+from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -14,6 +16,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(80), unique=True, nullable=False)
     email_confirmed = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(120), nullable=False)
+    person = relationship('Person', uselist=False, backref='user')
 
     @property
     def password(self):
@@ -25,3 +28,11 @@ class User(db.Model, UserMixin):
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+
+class Person(db.Model):
+    __tablename__ = 'persons'
+
+    first_name = db.Column(db.String(128), primary_key=True)
+    last_name = db.Column(db.String(128), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('users.id'))

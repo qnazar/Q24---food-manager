@@ -16,3 +16,9 @@ class LoginForm(FlaskForm):
     email = EmailField('Email', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+
+class PersonalInfo(FlaskForm):
+    first_name = StringField("Ім’я", validators=[Length(max=128)])
+    last_name = StringField("Прізвище", validators=[Length(max=128)])
+    submit = SubmitField('Submit')
