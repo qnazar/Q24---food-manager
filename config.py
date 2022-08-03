@@ -6,6 +6,8 @@ PG_DATABASE = "food"
 
 SECRET_KEY = '135f61d2fwe6523ada5651f'
 
+SQLALCHEMY_DATABASE_URI = f"postgresql+psycopg2://{PG_USER}:{PG_PSSWRD}@localhost/{PG_DATABASE}"
+
 MAIL_SERVER = 'smtp.gmail.com'
 MAIL_USERNAME = 'xxxnazarkoxxx@gmail.com'
 MAIL_PASSWORD = 'hvichzlggoazsniw'

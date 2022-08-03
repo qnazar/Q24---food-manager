@@ -1,11 +1,17 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, BaseQuery
 import datetime
 
 from sqlalchemy.orm import relationship
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
-db = SQLAlchemy()
+
+class CustomQuery(BaseQuery):
+    def get_or_None(self, ident):
+        return self.get(ident) or None
+
+
+db = SQLAlchemy(query_class=CustomQuery)
 
 
 class User(db.Model, UserMixin):
@@ -33,6 +39,6 @@ class User(db.Model, UserMixin):
 class Person(db.Model):
     __tablename__ = 'persons'
 
-    first_name = db.Column(db.String(128), primary_key=True)
-    last_name = db.Column(db.String(128), primary_key=True)
-    id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    first_name = db.Column(db.String(128))
+    last_name = db.Column(db.String(128))
+    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)

@@ -1,43 +1,34 @@
-from flask import Flask, render_template, url_for, flash, redirect, request
+from flask import Flask, render_template, url_for, flash, redirect, session
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 
 from models import db, User, Person
-from config import *
 from texts_ua import Texts
 from forms import RegisterForm, LoginForm, PersonalInfo
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
-app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql+psycopg2://{PG_USER}:{PG_PSSWRD}@localhost/{PG_DATABASE}"
-db.init_app(app)
 
+# DB initialization
+db.init_app(app)
 with app.app_context():
     db.create_all()
 
+# Mail agent for email confirmation and serializer
 mail = Mail(app)
-s = URLSafeTimedSerializer('SomethingSecret')
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
+# Login initialization
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-
-@app.before_request
-def get_db():
-    """Getting DB before start of the session"""
-    db.create_all()
-
-
-# @app.teardown_appcontext
-# def close_contest(error):
-#     """Closing DB after session"""
-#     db.close_all_sessions()
 
 
 @app.route('/')
@@ -45,41 +36,51 @@ def index():
     return render_template('home.html', title='Home')
 
 
-# @app.route('/calc')
-# def calc():
-#     return render_template('calc.html', title='Calc')
-
-
 @app.route('/registration', methods=['GET', 'POST'])
 def registration():
     form = RegisterForm()
     if form.validate_on_submit():
 
+        # checking for user with unique email
         user = User.query.filter_by(email=form.email.data).first()
-        if user is None:
-
+        if user is None:  # no such email was used
             user = User(email=form.email.data,
                         password_hash=generate_password_hash(form.password.data))
-
+            # adding user to the db
             db.session.add(user)
             db.session.commit()
+            login_user(user)  # autologin after registration
             flash(Texts.reg_success)
+
+            # sending email confirmation
+            token = s.dumps(user.email, salt='email-confirm')
+            msg = Message('Confirm email', sender=app.config['MAIL_USERNAME'], recipients=[user.email])
+            link = url_for('confirm_email', token=token, _external=True)
+            msg.body = f'Your link is {link}'
+            mail.send(msg)
+
             return redirect(location=url_for('user', id=user.id))
         else:
             flash('This email is already used')
-
-        # if user.id:
-        #     flash(Texts.reg_success)
-        #     return redirect(location=url_for('user', id=user.id))  #
-        # else:
-        #     flash(Texts.reg_fail)
-
-        form.email.data = ''
     return render_template('registration.html', title='Registration', form=form)
+
+
+@app.route('/confirm_email/<token>')
+def confirm_email(token):
+    try:
+        email = s.loads(token, salt='email-confirm', max_age=900)
+        flash('Email confirmed!!!')
+        current_user.email_confirmed = True
+        db.session.commit()
+    except SignatureExpired:
+        return 'Signature time expired'
+    return redirect(url_for('user', id=current_user.id))
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('user', id=current_user.id))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -106,41 +107,25 @@ def logout():
 @app.route('/user/<id>', methods=['GET', 'POST'])
 @login_required
 def user(id):
-    form = PersonalInfo()
-    user = User.query.filter_by(id=id).first()
-    if form.validate_on_submit():
-        first_name = form.first_name.data
-        last_name = form.last_name.data
-        person = Person(first_name=first_name, last_name=last_name)
+    person = Person.query.get_or_None(id)
+    if not person:
+        person = Person(id=current_user.id)
         db.session.add(person)
         db.session.commit()
-    return render_template('user.html', title='Profile', user=user, form=form)
+    return render_template('user.html', title='Profile', user=current_user, person=person)
 
 
-@app.route('/confirm_email/<token>')
-def confirm(token):
-    try:
-        email = s.loads(token, salt='email-confirm', max_age=30)
-    except SignatureExpired:
-        return "Failed"
-    return 'All worked'  # тут я можу повернути авторизовану сторінку або краще редірект
-
-
-@app.route('/send')
-def send():
-
-    email = 'qnazar@ukr.net'
-    token = s.dumps(email, salt='email-confirm')
-
-    msg = Message('Confirm email', sender=app.config['MAIL_USERNAME'], recipients=[email])
-
-    link = url_for('confirm', token=token, _external=True)
-
-    msg.body = 'Your link is {}'.format(link)
-
-    mail.send(msg)
-
-    return "<h1>Message sent</h1>"
+@app.route('/user/<id>/update', methods=['GET', 'POST'])
+def update_personal_info(id):
+    person = Person.query.get_or_None(id)
+    form = PersonalInfo()
+    if form.validate_on_submit():
+        person.first_name = form.first_name.data
+        person.last_name = form.last_name.data
+        db.session.commit()
+        flash('Інфо оновлено!')
+        return redirect(url_for('user', id=current_user.id))
+    return render_template('update.html', title='Update Info', user=current_user, form=form)
 
 
 if __name__ == '__main__':
