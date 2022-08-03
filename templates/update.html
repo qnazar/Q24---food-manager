@@ -7,10 +7,10 @@
     {{ form.hidden_tag() }}
 
     {{ form.first_name.label(class="form-label") }}
-    {{ form.first_name(class="form-control") }}
+    {{ form.first_name(class="form-control", value=person.first_name) }}
     <br>
     {{ form.last_name.label(class="form-label") }}
-    {{ form.last_name(class="form-control") }}
+    {{ form.last_name(class="form-control", value=person.last_name) }}
     <br>
 
     {{ form.submit(class="btn btn-secondary") }}

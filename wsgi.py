@@ -50,7 +50,7 @@ def registration():
             db.session.add(user)
             db.session.commit()
             login_user(user)  # autologin after registration
-            flash(Texts.reg_success)
+            flash(Texts.reg_success, category='success')
 
             # sending email confirmation
             token = s.dumps(user.email, salt='email-confirm')
@@ -61,7 +61,7 @@ def registration():
 
             return redirect(location=url_for('user', id=user.id))
         else:
-            flash('This email is already used')
+            flash('This email is already used', category='warning')
     return render_template('registration.html', title='Registration', form=form)
 
 
@@ -69,7 +69,7 @@ def registration():
 def confirm_email(token):
     try:
         email = s.loads(token, salt='email-confirm', max_age=900)
-        flash('Email confirmed!!!')
+        flash('Email confirmed!!!', category='success')
         current_user.email_confirmed = True
         db.session.commit()
     except SignatureExpired:
@@ -87,12 +87,12 @@ def login():
         if user:
             if check_password_hash(user.password_hash, form.password.data):
                 login_user(user)
-                flash('Login successfully')
+                flash('Login successfully', category='success')
                 return redirect(url_for('user', id=user.id))
             else:
-                flash('Неправильний пароль')
+                flash('Неправильний пароль', category='danger')
         else:
-            flash('Немає користувача з такою електронною адресою')
+            flash('Немає користувача з такою електронною адресою', category='danger')
     return render_template('login.html', form=form, title='Login')
 
 
@@ -100,7 +100,7 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logout')
+    flash('You have been logout', category='success')
     return redirect(url_for('login'))
 
 
@@ -123,9 +123,9 @@ def update_personal_info(id):
         person.first_name = form.first_name.data
         person.last_name = form.last_name.data
         db.session.commit()
-        flash('Інфо оновлено!')
+        flash('Інфо оновлено!', category='success')
         return redirect(url_for('user', id=current_user.id))
-    return render_template('update.html', title='Update Info', user=current_user, form=form)
+    return render_template('update.html', title='Update Info', user=current_user, form=form, person=person)
 
 
 if __name__ == '__main__':
