@@ -7,32 +7,16 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endfor %}
-    <h1 align="center">PROFILE</h1>
+    <hr>
+    <h1 align="center" class="text-dark">PROFILE</h1>
 <h2>User email: {{ user.email }}</h2>
     <h3>Email confirm - {{ user.email_confirmed }}</h3>
     <h4>registered at - {{ user.registration_date }}</h4>
     <h5>Ім’я: {{ person.first_name }}</h5>
     <h5>Прізвище: {{ person.last_name }}</h5>
 
+    <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Update</a>
 
-
-{#    <div class="shadow-lg p-3 mb-5 bg-body rounded">#}
-{#    <form method="post">#}
-{#    {{ form.hidden_tag() }}#}
-{##}
-{#    {{ form.first_name.label(class="form-label") }}#}
-{#    {{ form.first_name(class="form-control") }}#}
-{#    <br>#}
-{#    {{ form.last_name.label(class="form-label") }}#}
-{#    {{ form.last_name(class="form-control") }}#}
-{#    <br>#}
-{##}
-{#    {{ form.submit(class="btn btn-secondary") }}#}
-{##}
-{#    </form>#}
-{#    </div>#}
-
-    <a href="{{ url_for('update_personal_info', id=user.id) }}">Update</a>
-    <a href="{{ url_for('logout') }}">Logout</a>
+    <a class="btn btn-dark" href="{{ url_for('logout') }}">Logout</a>
 
 {% endblock %}

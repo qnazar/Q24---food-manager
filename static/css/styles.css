@@ -1,8 +1,8 @@
-h1 {
-    color: darkblue;
-    font-size: 48px;
-}
 
 .form {
     width: 50%;
+}
+
+.nav-link, .navbar-brand {
+    color: ivory;
 }
