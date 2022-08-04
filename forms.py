@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, EmailField, PasswordField, SubmitField
+from wtforms import StringField, EmailField, PasswordField, SubmitField, SelectField, DateField
 from wtforms.validators import Email, DataRequired, Length, EqualTo
 
 
@@ -21,4 +21,6 @@ class LoginForm(FlaskForm):
 class PersonalInfo(FlaskForm):
     first_name = StringField("Ім’я", validators=[Length(max=128)])
     last_name = StringField("Прізвище", validators=[Length(max=128)])
+    sex = SelectField("Стать", choices=[('M', 'M'), ('F', 'Ж')])
+    birthday = DateField("Дата народження")
     submit = SubmitField('Submit')

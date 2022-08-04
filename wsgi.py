@@ -96,7 +96,7 @@ def login():
     return render_template('login.html', form=form, title='Login')
 
 
-@app.route('/logout', methods=['GET', 'POST'])
+@app.route('/logout')
 @login_required
 def logout():
     logout_user()
@@ -122,6 +122,8 @@ def update_personal_info(id):
     if form.validate_on_submit():
         person.first_name = form.first_name.data
         person.last_name = form.last_name.data
+        person.sex = form.sex.data
+        person.birthday = form.birthday.data
         db.session.commit()
         flash('Інфо оновлено!', category='success')
         return redirect(url_for('user', id=current_user.id))

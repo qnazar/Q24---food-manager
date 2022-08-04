@@ -12,6 +12,12 @@
     {{ form.last_name.label(class="form-label") }}
     {{ form.last_name(class="form-control", value=person.last_name) }}
     <br>
+    {{ form.sex.label(class="form-label") }}
+    {{ form.sex(class="form-control", value=person.sex) }}
+    <br>
+    {{ form.birthday.label(class="form-label") }}
+    {{ form.birthday(class="form-control", value=person.birthday) }}
+    <br>
 
     {{ form.submit(class="btn btn-secondary") }}
 

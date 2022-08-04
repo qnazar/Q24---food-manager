@@ -41,4 +41,6 @@ class Person(db.Model):
 
     first_name = db.Column(db.String(128))
     last_name = db.Column(db.String(128))
+    sex = db.Column(db.String(10))
+    birthday = db.Column(db.Date)
     id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)

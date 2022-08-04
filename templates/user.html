@@ -9,14 +9,23 @@
     {% endfor %}
     <hr>
     <h1 align="center" class="text-dark">PROFILE</h1>
-<h2>User email: {{ user.email }}</h2>
-    <h3>Email confirm - {{ user.email_confirmed }}</h3>
-    <h4>registered at - {{ user.registration_date }}</h4>
-    <h5>Ім’я: {{ person.first_name }}</h5>
-    <h5>Прізвище: {{ person.last_name }}</h5>
+{#<h2>User email: {{ user.email }}</h2>#}
+{#    <h3>Email confirm - {{ user.email_confirmed }}</h3>#}
+{#    <h4>registered at - {{ user.registration_date }}</h4>#}
+    <div class="container">
+    <div class="row">
+        <div class="col-4">
+            <img src="../static/images/user-pic.jpg" width="200">
+        </div>
+        <div class="col-8">
+    <h5>{{ person.first_name }} {{ person.last_name }}</h5>
+    <h5>{{ person.sex }} {{ person.birthday }}</h5>
 
-    <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Update</a>
+    <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Додати інфо</a>
 
-    <a class="btn btn-dark" href="{{ url_for('logout') }}">Logout</a>
+    <a class="btn btn-dark" href="{{ url_for('logout') }}">Вийти</a>
+        </div>
 
+        </div>
+</div>
 {% endblock %}
