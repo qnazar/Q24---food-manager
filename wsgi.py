@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, flash, redirect, session
+from flask import Flask, render_template, url_for, flash, redirect, session, request
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -118,12 +118,16 @@ def user(id):
 @app.route('/user/<id>/update', methods=['GET', 'POST'])
 def update_personal_info(id):
     person = Person.query.get_or_None(id)
-    form = PersonalInfo()
+    form = PersonalInfo(sex=person.sex)
     if form.validate_on_submit():
-        person.first_name = form.first_name.data
-        person.last_name = form.last_name.data
-        person.sex = form.sex.data
-        person.birthday = form.birthday.data
+        if form.first_name.data:
+            person.first_name = form.first_name.data
+        if form.last_name.data:
+            person.last_name = form.last_name.data
+        if form.sex.validate_choice:
+            person.sex = form.sex.data
+        if form.birthday.data:
+            person.birthday = form.birthday.data
         db.session.commit()
         flash('Інфо оновлено!', category='success')
         return redirect(url_for('user', id=current_user.id))

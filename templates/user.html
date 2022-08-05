@@ -12,14 +12,28 @@
 {#<h2>User email: {{ user.email }}</h2>#}
 {#    <h3>Email confirm - {{ user.email_confirmed }}</h3>#}
 {#    <h4>registered at - {{ user.registration_date }}</h4>#}
-    <div class="container">
+    <div class="container  shadow-lg">
     <div class="row">
-        <div class="col-4">
-            <img src="../static/images/user-pic.jpg" width="200">
+        <div class="col-3">
+            <img src="../static/images/user-pic.jpg" width="200"><br>
+            <br>
+            <a class="btn btn-dark btn-sm" href="{{ url_for('user', id=current_user.id) }}">Змінити фото</a>
+            <br><br>
         </div>
         <div class="col-8">
-    <h5>{{ person.first_name }} {{ person.last_name }}</h5>
-    <h5>{{ person.sex }} {{ person.birthday }}</h5>
+        <br>
+    {% if person.first_name %}
+    <h5>{{ person.first_name }}</h5>
+    {% endif %}
+    {% if person.last_name %}
+    <h5>{{ person.last_name }}</h5>
+    {% endif %}
+    {% if person.sex %}
+    <h5>{{ person.sex }}</h5>
+    {% endif %}
+    {% if person.birthday %}
+    <h5>{{ person.birthday }}</h5>
+    {% endif %}
 
     <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Додати інфо</a>
 
