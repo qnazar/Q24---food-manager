@@ -24,4 +24,5 @@ class PersonalInfo(FlaskForm):
     last_name = StringField("Прізвище", validators=[Length(max=128)])
     sex = SelectField("Стать", choices=[('M', 'M'), ('F', 'Ж')])
     birthday = DateField("Дата народження", validators=[DataRequired()])
+    profile_pic = FileField('Аватарка')
     submit = SubmitField('Submit')

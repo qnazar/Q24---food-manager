@@ -3,6 +3,9 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from werkzeug.utils import secure_filename
+import uuid
+import os
 
 from models import db, User, Person
 from texts_ua import Texts
@@ -128,10 +131,35 @@ def update_personal_info(id):
             person.sex = form.sex.data
         if form.birthday.data:
             person.birthday = form.birthday.data
+        if form.profile_pic.data:
+
+            if current_user.profile_pic:
+                os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
+
+            picture = request.files['profile_pic']
+            pic_filename = secure_filename(picture.filename)
+            pic_name = str(uuid.uuid1()) + '_' + pic_filename
+
+            picture.save(os.path.join(app.config['FOLDER_TO_UPLOAD'], pic_name))
+            current_user.profile_pic = pic_name
+
         db.session.commit()
         flash('Інфо оновлено!', category='success')
         return redirect(url_for('user', id=current_user.id))
     return render_template('update.html', title='Update Info', user=current_user, form=form, person=person)
+
+
+@app.route('/delete_picture')
+@login_required
+def delete_picture():
+    if current_user.profile_pic is None:
+        pass
+    else:
+        print("work")
+        os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
+        current_user.profile_pic = None
+        db.session.commit()
+    return redirect(url_for('user', id=current_user.id))
 
 
 if __name__ == '__main__':

@@ -15,10 +15,22 @@
     <div class="container  shadow-lg">
     <div class="row">
         <div class="col-3">
-            <img src="../static/images/user-pic.jpg" width="200"><br>
-            <br>
+        <br>
+            <div class="container shadow-lg ">
+            {% if current_user.profile_pic %}
+                <br>
+                <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" width="200" class="center"><br>
+                <br>
+            {% else %}
+                <br>
+                <img src="../static/images/profiles/user-pic.png" width="200" class="center"><br>
+                <br>
+            {% endif %}
+            </div>
+                <br>
             <a class="btn btn-dark btn-sm" href="{{ url_for('user', id=current_user.id) }}">Змінити фото</a>
-            <br><br>
+            <a class="btn btn-dark btn-sm" href="{{ url_for('delete_picture') }}">Видалити фото</a>
+                <br><br>
         </div>
         <div class="col-8">
         <br>

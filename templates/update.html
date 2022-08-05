@@ -3,7 +3,7 @@
 {% block content %}
 
     <div class="shadow-lg p-3 mb-5 bg-body rounded">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
     {{ form.hidden_tag() }}
 
     {{ form.first_name.label(class="form-label") }}
@@ -17,6 +17,9 @@
     <br>
     {{ form.birthday.label(class="form-label") }}
     {{ form.birthday(class="form-control", value=person.birthday) }}
+    <br>
+    {{ form.profile_pic.label(class='form-label') }}
+    {{ form.profile_pic(class='form-control') }}
     <br>
 
     {{ form.submit(class="btn btn-secondary") }}

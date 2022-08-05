@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(80), unique=True, nullable=False)
     email_confirmed = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(120), nullable=False)
+    profile_pic = db.Column(db.String)
     person = relationship('Person', uselist=False, backref='user')
 
     @property

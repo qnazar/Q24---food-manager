@@ -14,3 +14,5 @@ MAIL_PASSWORD = 'hvichzlggoazsniw'
 MAIL_PORT = 465
 MAIL_USE_SSL = True
 MAIL_USE_TLS = False
+
+FOLDER_TO_UPLOAD = 'static/images/profiles/'
