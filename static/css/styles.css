@@ -13,3 +13,11 @@
   margin-right: auto;
   width: 100%;
 }
+
+.side-btn {
+    width: 90%;
+    margin-bottom: 8px;
+    margin-top: 8px;
+    margin-right: auto;
+    margin-left: auto;
+}

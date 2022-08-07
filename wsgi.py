@@ -9,7 +9,7 @@ import os
 
 from models import db, User, Profile
 from texts_ua import Texts
-from forms import RegisterForm, LoginForm, ProfileForm
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, WaterForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -112,7 +112,7 @@ def logout():
 def user(id):
     profile = Profile.query.get_or_None(id)
     if not profile:
-        profile = Profile(id=current_user.id)
+        profile = Profile(id=current_user.id, user_id=current_user.id)
         db.session.add(profile)
         db.session.commit()
     return render_template('user.html', title='Profile', user=current_user, person=profile)
@@ -120,8 +120,8 @@ def user(id):
 
 @app.route('/user/<id>/update', methods=['GET', 'POST'])
 def update_personal_info(id):
-    person = current_user.person  # Profile.query.get_or_None(id)
-    form = ProfileForm(sex=person.sex)
+    person = current_user.person
+    form = ProfileForm(sex=person.sex, constitution=person.constitution)
     if form.validate_on_submit():
         if form.first_name.data:
             person.first_name = form.first_name.data
@@ -131,8 +131,32 @@ def update_personal_info(id):
             person.sex = form.sex.data
         if form.birthday.data:
             person.birthday = form.birthday.data
-        if form.profile_pic.data:
+        if form.weight.data:
+            person.weight = form.weight.data
+        if form.height.data:
+            person.height = form.height.data
+        if form.constitution.data:
+            person.constitution = form.constitution.data
+        if form.activity.data:
+            person.activity = form.activity.data
+        db.session.commit()
+        print(person.body_mass_index())
+        print(person.basic_metabolism_rate())
+        print(person.daily_kcal_intake())
+        print(person.ideal_weight())
+        print(person.water_norm())
+        print(person.highest_normal_weight())
+        flash('Інфо оновлено!', category='success')
+        return redirect(url_for('user', id=current_user.id))
+    return render_template('update.html', title='Update Info', user=current_user, form=form, person=person)
 
+
+@app.route('/upload_picture', methods=['GET', 'POST'])
+@login_required
+def upload_picture():
+    form = ProfilePicForm()
+    if form.validate_on_submit():
+        if form.profile_pic.data:
             if current_user.profile_pic:
                 os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
 
@@ -142,11 +166,11 @@ def update_personal_info(id):
 
             picture.save(os.path.join(app.config['FOLDER_TO_UPLOAD'], pic_name))
             current_user.profile_pic = pic_name
-
-        db.session.commit()
-        flash('Інфо оновлено!', category='success')
+            db.session.commit()
+            flash(message='Фото успішно оновлено', category='success')
         return redirect(url_for('user', id=current_user.id))
-    return render_template('update.html', title='Update Info', user=current_user, form=form, person=person)
+    return render_template('upload_picture.html', title='Upload profile pic', form=form)
+
 
 
 @app.route('/delete_picture')
@@ -160,6 +184,26 @@ def delete_picture():
         current_user.profile_pic = None
         db.session.commit()
     return redirect(url_for('user', id=current_user.id))
+
+
+@app.route('/calculations/<mode>', methods=['GET', 'POST'])
+@login_required
+def calculations(mode):
+    if mode == 'water':
+        form = WaterForm(weight=current_user.profile.weight)
+        if form.validate_on_submit():
+            current_user.profile.weight = form.weight.data
+            db.session.commit()
+            water = current_user.profile.water_norm()
+            flash(f'Твоя денна норма води - {water} мл!')
+            return redirect(url_for('user', id=current_user.id))
+        return render_template('calculations.html', form=form, mode='water')
+    elif mode == 'kcal':
+        pass
+    elif mode == 'imt':
+        pass
+    elif mode == 'weight':
+        pass
 
 
 if __name__ == '__main__':

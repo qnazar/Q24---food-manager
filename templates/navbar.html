@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-dark text-bg-light">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{{ url_for('index') }}">Food APP</a>
+    <a class="navbar-brand" href="{{ url_for('index') }}">Q24</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -8,26 +8,26 @@
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-        <li class="nav-item">
-          <a class="nav-link" aria-current="page" href="{{ url_for('index') }}">Home</a>
-        </li>
+{#        <li class="nav-item">#}
+{#          <a class="nav-link" aria-current="page" href="{{ url_for('index') }}">Home</a>#}
+{#        </li>#}
 
       <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('user', id=current_user.id) }}">Profile</a>
+          <a class="nav-link" href="{{ url_for('user', id=current_user.id) }}">Мій профіль</a>
           </li>
 
       {% if not current_user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('registration') }}">Registration</a>
+          <a class="nav-link" href="{{ url_for('registration') }}">Реєстрація</a>
         </li>
       {% endif %}
           {% if not current_user.is_authenticated %}
           <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+          <a class="nav-link" href="{{ url_for('login') }}">Увійти</a>
           </li>
           {% else %}
               <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+          <a class="nav-link" href="{{ url_for('logout') }}">Вийти</a>
           </li>
           {% endif %}
 

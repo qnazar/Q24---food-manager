@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    {% if mode == 'water' %}
+
+    <div class="container shadow-lg">
+
+        <h4>Перевір, чи правильно вказана твоя теперішня вага</h4>
+        <form class="form" method="post">
+            {{ form.hidden_tag() }}
+
+            {{ form.weight.label(class='form-label') }}
+            {{ form.weight(class='form-control') }}
+            <br>
+            {{ form.submit(class="btn btn-secondary")}}
+        </form>
+
+
+    </div>
+
+    {% endif %}
+
+{% endblock %}

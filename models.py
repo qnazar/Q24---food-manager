@@ -49,5 +49,50 @@ class Profile(db.Model):
     last_name = db.Column(db.String(128))
     sex = db.Column(db.String(10))
     birthday = db.Column(db.Date)
+
+    weight = db.Column(db.Float(precision=1))
+    height = db.Column(db.Integer)
+    constitution = db.Column(db.String(32))
+    activity = db.Column(db.Float(precision=2))
+
+    # BMI = db.Column(db.Float(precision=2))
+
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
+    def body_mass_index(self):
+        BMI = self.weight / (self.height / 100) ** 2
+        return round(BMI, 2)
+
+    def basic_metabolism_rate(self):
+        """Формула Міффліна - Сан Жеора"""
+        age = (datetime.date.today() - self.birthday).total_seconds() // (60 * 60 * 24 * 365)
+        if self.sex == 'Male':
+            BMR = 9.99 * self.weight + 6.25 * self.height - 4.92 * age + 5
+            # BMR = 88.36 + (13.4 * self.weight) + (4.8 * self.height) - (5.7 * age)
+        elif self.sex == 'Female':
+            BMR = 9.99 * self.weight + 6.25 * self.height - 4.92 * age - 161
+            # BMR = 447.6 + (9.2 * self.weight) + (3.1 + self.height) - (4.3 * age)
+        else:
+            raise ValueError
+        return int(BMR)
+
+    def daily_kcal_intake(self):
+        BMR = self.basic_metabolism_rate()
+        SDFE = BMR / 10  # специфічно-динамічна дія їжі
+        return round((BMR + SDFE) * self.activity)
+
+    def highest_normal_weight(self):
+        return round(25 * (self.height/100)**2, 1)
+
+    def water_norm(self):
+        hnw = self.highest_normal_weight()
+        overweight = self.weight - hnw if self.weight > hnw else 0
+        return round(35 * self.weight + overweight * 20)
+
+    def ideal_weight(self):
+        iw = (self.height - 100) - (self.height - 150) / 4
+        if self.constitution == 'Astenic':
+            iw = iw - iw/10
+        elif self.constitution == 'Hyperstenic':
+            iw = iw + iw/10
+        return round(iw, 1)
