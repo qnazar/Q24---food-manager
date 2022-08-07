@@ -19,7 +19,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Submit')
 
 
-class PersonalInfo(FlaskForm):
+class ProfileForm(FlaskForm):
     first_name = StringField("Ім’я", validators=[Length(max=128)])
     last_name = StringField("Прізвище", validators=[Length(max=128)])
     sex = SelectField("Стать", choices=[('M', 'M'), ('F', 'Ж')])

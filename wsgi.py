@@ -7,9 +7,9 @@ from werkzeug.utils import secure_filename
 import uuid
 import os
 
-from models import db, User, Person
+from models import db, User, Profile
 from texts_ua import Texts
-from forms import RegisterForm, LoginForm, PersonalInfo
+from forms import RegisterForm, LoginForm, ProfileForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -110,18 +110,18 @@ def logout():
 @app.route('/user/<id>', methods=['GET', 'POST'])
 @login_required
 def user(id):
-    person = Person.query.get_or_None(id)
-    if not person:
-        person = Person(id=current_user.id)
-        db.session.add(person)
+    profile = Profile.query.get_or_None(id)
+    if not profile:
+        profile = Profile(id=current_user.id)
+        db.session.add(profile)
         db.session.commit()
-    return render_template('user.html', title='Profile', user=current_user, person=person)
+    return render_template('user.html', title='Profile', user=current_user, person=profile)
 
 
 @app.route('/user/<id>/update', methods=['GET', 'POST'])
 def update_personal_info(id):
-    person = Person.query.get_or_None(id)
-    form = PersonalInfo(sex=person.sex)
+    person = current_user.person  # Profile.query.get_or_None(id)
+    form = ProfileForm(sex=person.sex)
     if form.validate_on_submit():
         if form.first_name.data:
             person.first_name = form.first_name.data

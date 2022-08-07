@@ -23,7 +23,7 @@ class User(db.Model, UserMixin):
     email_confirmed = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(120), nullable=False)
     profile_pic = db.Column(db.String)
-    person = relationship('Person', uselist=False, backref='user')
+    profile = relationship('Profile', uselist=False, backref='users')
 
     @property
     def password(self):
@@ -36,12 +36,18 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    @property
+    def person(self):
+        return Profile.query.get(self.id)
 
-class Person(db.Model):
-    __tablename__ = 'persons'
 
+class Profile(db.Model):
+    __tablename__ = 'profiles'
+
+    id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(128))
     last_name = db.Column(db.String(128))
     sex = db.Column(db.String(10))
     birthday = db.Column(db.Date)
-    id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
