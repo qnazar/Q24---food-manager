@@ -1,11 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    {% if mode == 'water' %}
-
     <div class="container shadow-lg">
 
+{#    {% if mode == 'water' %}#}
         <h4>Перевір, чи правильно вказана твоя теперішня вага</h4>
         <form class="form" method="post">
             {{ form.hidden_tag() }}
@@ -15,10 +13,13 @@
             <br>
             {{ form.submit(class="btn btn-secondary")}}
         </form>
+{#    {% elif mode == '' %}    #}
+{#    {% elif mode == '' %}    #}
+{#    {% elif mode == '' %}    #}
 
 
     </div>
 
-    {% endif %}
+{#    {% endif %}#}
 
 {% endblock %}

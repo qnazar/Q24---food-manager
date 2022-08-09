@@ -9,7 +9,7 @@ import os
 
 from models import db, User, Profile
 from texts_ua import Texts
-from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, WaterForm
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -186,24 +186,35 @@ def delete_picture():
     return redirect(url_for('user', id=current_user.id))
 
 
+@app.route('/IMT')
+def get_IMT():
+    return render_template('imt.html')
+
+
 @app.route('/calculations/<mode>', methods=['GET', 'POST'])
 @login_required
 def calculations(mode):
-    if mode == 'water':
-        form = WaterForm(weight=current_user.profile.weight)
-        if form.validate_on_submit():
-            current_user.profile.weight = form.weight.data
-            db.session.commit()
+    form = CalcForm(weight=current_user.profile.weight)
+    if form.validate_on_submit():
+        current_user.profile.weight = form.weight.data
+        db.session.commit()
+        if mode == 'water':
             water = current_user.profile.water_norm()
             flash(f'Твоя денна норма води - {water} мл!')
             return redirect(url_for('user', id=current_user.id))
-        return render_template('calculations.html', form=form, mode='water')
-    elif mode == 'kcal':
-        pass
-    elif mode == 'imt':
-        pass
-    elif mode == 'weight':
-        pass
+        elif mode == 'kcal':
+            kcal = current_user.profile.daily_kcal_intake()
+            flash(f'Твоя денна норма калорій - {kcal} ккал!')
+            return redirect(url_for('user', id=current_user.id))
+        elif mode == 'imt':
+            imt = current_user.profile.body_mass_index()
+            flash(f'Твій індекс маси тіла - {imt}!')
+            return redirect(url_for('user', id=current_user.id))
+        elif mode == 'weight':
+            weight = current_user.profile.ideal_weight()
+            flash(f'Твоя ідеальна вага - {weight} кг!')
+            return redirect(url_for('user', id=current_user.id))
+    return render_template('calculations.html', form=form)
 
 
 if __name__ == '__main__':

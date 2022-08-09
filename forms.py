@@ -39,6 +39,6 @@ class ProfilePicForm(FlaskForm):
     submit = SubmitField('Змінити')
 
 
-class WaterForm(FlaskForm):
+class CalcForm(FlaskForm):
     weight = FloatField("Вага (кг) 00.0")
     submit = SubmitField('Отримати результат')

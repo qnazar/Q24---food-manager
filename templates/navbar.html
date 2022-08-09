@@ -16,6 +16,24 @@
           <a class="nav-link" href="{{ url_for('user', id=current_user.id) }}">Мій профіль</a>
           </li>
 
+      <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Розрахунки
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Що це?</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Індекс маси тіла</a></li>
+            <li><a class="dropdown-item" href="#">Денна норма калорій</a></li>
+            <li><a class="dropdown-item" href="#">Ідеальна вага</a></li>
+            <li><a class="dropdown-item" href="#">Денна норма води</a></li>
+          </ul>
+        </li>
+
+      <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('calculations', mode='water') }}">Розрахунки</a>
+          </li>
+
       {% if not current_user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{{ url_for('registration') }}">Реєстрація</a>

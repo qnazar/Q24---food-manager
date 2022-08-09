@@ -1,6 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
+{#    <div class="row">#}
+{#        <div class="col-md-2">#}
+{#            <div class="container">#}
+{#            {% if current_user.profile_pic %}<br>#}
+{#                <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" width="200" class="rounded-circle center"><br><br>#}
+{#            {% else %}<br>#}
+{#                <img src="../static/images/profiles/user-pic.png" width="200" class="center"><br><br>#}
+{#            {% endif %}#}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+{##}
+{##}
+
+
+
+
     {% for cat, msg in get_flashed_messages(with_categories=True) %}
         <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
             <strong>{{ msg }}</strong>
@@ -10,7 +28,7 @@
     <hr>
     <h1 align="center" class="text-dark">PROFILE</h1>
 
-    <div class="container  shadow-lg">
+    <div class="container shadow-lg">
 
     <div class="row">
 
