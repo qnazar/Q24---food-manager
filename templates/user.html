@@ -2,87 +2,62 @@
 
 {% block content %}
 
-{#    <div class="row">#}
-{#        <div class="col-md-2">#}
-{#            <div class="container">#}
-{#            {% if current_user.profile_pic %}<br>#}
-{#                <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" width="200" class="rounded-circle center"><br><br>#}
-{#            {% else %}<br>#}
-{#                <img src="../static/images/profiles/user-pic.png" width="200" class="center"><br><br>#}
-{#            {% endif %}#}
-{#            </div>#}
-{#        </div>#}
-{#    </div>#}
-{##}
-{##}
-
-
-
-
-    {% for cat, msg in get_flashed_messages(with_categories=True) %}
-        <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
-            <strong>{{ msg }}</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
     <hr>
     <h1 align="center" class="text-dark">ПРОФІЛЬ</h1>
 
     <div class="container shadow-lg">
-
-    <div class="row">
-
-        <div class="col-3">
-        <br>
-            <div class="container shadow-lg ">
-            {% if current_user.profile_pic %}
+        <div class="row">
+            <div class="col-3">
                 <br>
-                <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" width="200" class="center"><br>
+                <div class="container shadow-lg ">
+                    {% if current_user.profile_pic %}
+                        <br>
+                        <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" width="200" class="center"><br>
+                        <br>
+                    {% else %}
+                        <br>
+                        <img src="../static/images/profiles/user-pic.png" width="200" class="center"><br>
+                        <br>
+                    {% endif %}
+                </div>
                 <br>
-            {% else %}
-                <br>
-                <img src="../static/images/profiles/user-pic.png" width="200" class="center"><br>
-                <br>
-            {% endif %}
-            </div>
-                <br>
-            <a class="btn btn-dark btn-sm" href="{{ url_for('upload_picture') }}">Змінити фото</a>
-            <a class="btn btn-dark btn-sm" href="{{ url_for('delete_picture') }}">Видалити фото</a>
+                <a class="btn btn-dark btn-sm" href="{{ url_for('upload_picture') }}">Змінити фото</a>
+                <a class="btn btn-dark btn-sm" href="{{ url_for('delete_picture') }}">Видалити фото</a>
                 <br><br>
-        </div>
+            </div>
 
-        <div class="col-7">
-        <br>
-    {% if person.first_name %}
-    <h5>{{ person.first_name }}</h5>
-    {% endif %}
-    {% if person.last_name %}
-    <h5>{{ person.last_name }}</h5>
-    {% endif %}
-    {% if person.sex %}
-    <h5>{{ person.sex }}</h5>
-    {% endif %}
-    {% if person.birthday %}
-    <h5>{{ person.birthday }}</h5>
-    {% endif %}
-    <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Додати інфо</a>
-        </div>
+            <div class="col-7">
+                <br>
+                {% if person.first_name %}
+                    <h5>{{ person.first_name }}</h5>
+                {% endif %}
+                {% if person.last_name %}
+                    <h5>{{ person.last_name }}</h5>
+                {% endif %}
+                {% if person.sex %}
+                    <h5>{{ person.sex }}</h5>
+                {% endif %}
+                {% if person.birthday %}
+                    <h5>{{ person.birthday }}</h5>
+                {% endif %}
+                <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Додати інфо</a>
+            </div>
 
-        <div class="col-2">
-            <div class="row">
-                <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='kcal') }}">Денна норма ккал</a>
-            </div>
-            <div class="row">
-                <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='imt') }}">Індек маси тіла</a>
-            </div>
-            <div class="row">
-                <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='water') }}">Денна норма води</a>
-            </div>
-            <div class="row">
-                <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='weight') }}">Ідеальна вага</a>
+            <div class="col-2">
+                <div class="row">
+                    <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='kcal') }}">Денна норма ккал</a>
+                </div>
+                <div class="row">
+                    <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='imt') }}">Індек маси тіла</a>
+                </div>
+                <div class="row">
+                    <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='water') }}">Денна норма води</a>
+                </div>
+                <div class="row">
+                    <a class="btn btn-dark side-btn" href="{{ url_for('calculations', mode='weight') }}">Ідеальна вага</a>
+                </div>
             </div>
         </div>
+    </div>
 
-        </div>
-</div>
 {% endblock %}

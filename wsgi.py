@@ -260,6 +260,5 @@ def add_product():
     return render_template('add_product.html', form=form)
 
 
-
 if __name__ == '__main__':
     app.run(debug=True)

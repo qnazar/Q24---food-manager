@@ -2,33 +2,22 @@
 
 {% block content %}
 
-    <br>
-
-    {% for cat, msg in get_flashed_messages(with_categories=True) %}
-        <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
-            <strong>{{ msg }}</strong>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-
-    {% endfor %}
-
-    <br>
     <div class="shadow-lg p-3 mb-5 bg-body rounded">
-    <form method="post">
-    {{ form.hidden_tag() }}
+        <form method="post">
+        {{ form.hidden_tag() }}
 
-    {{ form.email.label(class="form-label") }}
-    {{ form.email(class="form-control") }}
-    <br>
-    {{ form.password.label(class="form-label") }}
-    {{ form.password(class="form-control") }}
-    <br>
+        {{ form.email.label(class="form-label") }}
+        {{ form.email(class="form-control") }}
+        <br>
+        {{ form.password.label(class="form-label") }}
+        {{ form.password(class="form-control") }}
+        <br>
         {{ form.password_confirm.label(class="form-label") }}
-    {{ form.password_confirm(class="form-control") }}
-    <br>
-    {{ form.submit(class="btn btn-secondary") }}
+        {{ form.password_confirm(class="form-control") }}
+        <br>
+        {{ form.submit(class="btn btn-secondary") }}
 
-    </form>
+        </form>
     </div>
 
 {% endblock %}

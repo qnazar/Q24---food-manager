@@ -2,15 +2,6 @@
 
 {% block content %}
 
-
-    {% for cat, msg in get_flashed_messages(with_categories=True) %}
-        <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
-        <strong>{{ msg }}</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    {% endfor %}
-
-
 <div class="row container-fluid">
     <div class="col-5 container">
         <h3 style="text-align: center">Додати новий продукт</h3>
