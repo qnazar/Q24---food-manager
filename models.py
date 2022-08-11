@@ -15,7 +15,7 @@ db = SQLAlchemy(query_class=CustomQuery)
 
 
 class User(db.Model, UserMixin):
-    __tablename__ = 'users'
+    __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
     registration_date = db.Column(db.DateTime, default=datetime.datetime.now())
@@ -23,7 +23,9 @@ class User(db.Model, UserMixin):
     email_confirmed = db.Column(db.Boolean, default=False)
     password_hash = db.Column(db.String(120), nullable=False)
     profile_pic = db.Column(db.String)
-    profile = relationship('Profile', uselist=False, backref='users')
+
+    profile = relationship('Profile', uselist=False, back_populates='user')
+    stocks = relationship('Stock', backref='user')
 
     @property
     def password(self):
@@ -40,9 +42,13 @@ class User(db.Model, UserMixin):
     def person(self):
         return Profile.query.get(self.id)
 
+    # @property
+    # def stock(self):
+    #     return Stock.query(Stock).filter(Stock.user_id == self.id)
+
 
 class Profile(db.Model):
-    __tablename__ = 'profiles'
+    __tablename__ = 'profile'
 
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(128))
@@ -50,14 +56,15 @@ class Profile(db.Model):
     sex = db.Column(db.String(10))
     birthday = db.Column(db.Date)
 
-    weight = db.Column(db.Float(precision=1))
+    weight = db.Column(db.Float())
     height = db.Column(db.Integer)
     constitution = db.Column(db.String(32))
-    activity = db.Column(db.Float(precision=2))
+    activity = db.Column(db.Float())
 
     # BMI = db.Column(db.Float(precision=2))
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = relationship('User', back_populates='profile')
 
     def body_mass_index(self):
         BMI = self.weight / (self.height / 100) ** 2
@@ -96,3 +103,42 @@ class Profile(db.Model):
         elif self.constitution == 'Hyperstenic':
             iw = iw + iw/10
         return round(iw, 1)
+
+
+class ProductsCategory(db.Model):
+    __tablename__ = 'product_category'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(128), nullable=False)
+
+
+class Product(db.Model):
+    __tablename__ = 'product'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(128), nullable=False, unique=True)
+    kcal = db.Column(db.Integer())
+    proteins = db.Column(db.Float())
+    fats = db.Column(db.Float())
+    carbs = db.Column(db.Float())
+    fibers = db.Column(db.Float())
+
+    category = db.Column(db.Integer(), db.ForeignKey('product_category.id'))
+
+
+class Stock(db.Model):
+    __tablename__ = 'stock'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+    # user = relationship('User', back_populates='stock')
+    product_name = db.Column(db.String(256), nullable=False)
+    quantity = db.Column(db.Float())
+    measure = db.Column(db.String(16))  # г кг шт л мл
+    produced_date = db.Column(db.Date)
+    expired_date = db.Column(db.Date)
+    price = db.Column(db.Float())
+    date_added = db.Column(db.Date, default=datetime.date.today())
+    status = db.Column(db.String(64), default='new')  # new in-use fully-used expired thrown-away
+
+

@@ -14,7 +14,7 @@
 
       <li class="nav-item">
           <a class="nav-link" href="{{ url_for('user', id=current_user.id) }}">Мій профіль</a>
-          </li>
+      </li>
 
       <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -31,8 +31,12 @@
         </li>
 
       <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('stock') }}">Мої продукти</a>
+      </li>
+
+      <li class="nav-item">
           <a class="nav-link" href="{{ url_for('calculations', mode='water') }}">Розрахунки</a>
-          </li>
+      </li>
 
       {% if not current_user.is_authenticated %}
         <li class="nav-item">
@@ -44,10 +48,10 @@
           <a class="nav-link" href="{{ url_for('login') }}">Увійти</a>
           </li>
           {% else %}
-              <li class="nav-item">
+          <li class="nav-item">
           <a class="nav-link" href="{{ url_for('logout') }}">Вийти</a>
           </li>
-          {% endif %}
+      {% endif %}
 
 
       </ul>

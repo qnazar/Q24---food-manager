@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+    {% for cat, msg in get_flashed_messages(with_categories=True) %}
+        <strong>{{ msg }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    {% endfor %}
+    </div>
+
+<div class="row container-fluid">
+    <div class="col-5 container">
+        <h3 style="text-align: center">Додати новий продукт</h3>
+        <form method="post">
+            {{ form.csrf_token }}
+            <br>
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-control") }}
+            <br>
+            {{ form.quantity.label(class="form-label") }}
+            {{ form.quantity(class="form-control") }}
+            <br>
+            {{ form.measure.label(class="form-label") }}
+            {{ form.measure(class="form-control") }}
+            <br>
+            {{ form.produced_date.label(class="form-label") }}
+            {{ form.produced_date(class="form-control") }}
+            <br>
+            {{ form.expired_date.label(class="form-label") }}
+            {{ form.expired_date(class="form-control") }}
+            <br>
+            {{ form.price.label(class="form-label") }}
+            {{ form.price(class="form-control") }}
+            <br>
+            {{ form.submit(class="btn btn-secondary") }}
+        </form>
+    </div>
+    <div class="col-7">
+    <h3 style="text-align: center">Мої продукти</h3>
+    {% if products %}
+
+        <table class="table table-striped">
+            <tr>
+                <th>Продукт</th>
+                <th>К-сть</th>
+                <th>Міра</th>
+                <th>Виготовлено</th>
+                <th>Придатний до</th>
+                <th>Ціна</th>
+                <th>Статус</th>
+                <th>Дата додавання</th>
+            </tr>
+        {% for prod in products %}
+            <tr>
+                <td>{{ prod.product_name }}</td>
+                <td>{{ prod.quantity }}</td>
+                <td>{{ prod.measure }}</td>
+                <td>{{ prod.produced_date }}</td>
+                <td>{{ prod.expired_date }}</td>
+                <td>{{ prod.price }}</td>
+                <td>{{ prod.status }}</td>
+                <td>{{ prod.date_added }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %}
+        <p>У вас ще немає внесених продуктів</p>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, EmailField, PasswordField, SubmitField, SelectField, DateField, IntegerField, \
-    FloatField
+    FloatField, DecimalField
 from wtforms.validators import Email, DataRequired, Length, EqualTo, Regexp
 
 
@@ -42,3 +42,13 @@ class ProfilePicForm(FlaskForm):
 class CalcForm(FlaskForm):
     weight = FloatField("Вага (кг) 00.0")
     submit = SubmitField('Отримати результат')
+
+
+class StockForm(FlaskForm):
+    name = StringField("Назва продукту")
+    quantity = FloatField("Кількість")
+    measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
+    produced_date = DateField("Дата виготовлення")
+    expired_date = DateField("Вжити до")
+    price = FloatField("Ціна")
+    submit = SubmitField('Додати')

@@ -4,12 +4,13 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from werkzeug.utils import secure_filename
+from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from models import db, User, Profile
+from models import db, User, Profile, Stock
 from texts_ua import Texts
-from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm, StockForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -18,6 +19,9 @@ app.config.from_pyfile('config.py')
 db.init_app(app)
 with app.app_context():
     db.create_all()
+
+csrf = CSRFProtect()
+csrf.init_app(app)
 
 # Mail agent for email confirmation and serializer
 mail = Mail(app)
@@ -140,12 +144,6 @@ def update_personal_info(id):
         if form.activity.data:
             person.activity = form.activity.data
         db.session.commit()
-        print(person.body_mass_index())
-        print(person.basic_metabolism_rate())
-        print(person.daily_kcal_intake())
-        print(person.ideal_weight())
-        print(person.water_norm())
-        print(person.highest_normal_weight())
         flash('Інфо оновлено!', category='success')
         return redirect(url_for('user', id=current_user.id))
     return render_template('update.html', title='Update Info', user=current_user, form=form, person=person)
@@ -186,9 +184,9 @@ def delete_picture():
     return redirect(url_for('user', id=current_user.id))
 
 
-@app.route('/IMT')
-def get_IMT():
-    return render_template('imt.html')
+# @app.route('/IMT')
+# def get_IMT():
+#     return render_template('imt.html')
 
 
 @app.route('/calculations/<mode>', methods=['GET', 'POST'])
@@ -215,6 +213,25 @@ def calculations(mode):
             flash(f'Твоя ідеальна вага - {weight} кг!')
             return redirect(url_for('user', id=current_user.id))
     return render_template('calculations.html', form=form)
+
+
+@app.route('/stock', methods=['GET', 'POST'])
+@login_required
+def stock():
+    products = Stock.query.filter_by(user_id=current_user.id).all()
+    form = StockForm()
+    if form.validate_on_submit():
+        entry = Stock(user_id=current_user.id, product_name=form.name.data,
+                      quantity=form.quantity.data, measure=form.measure.data,
+                      produced_date=form.produced_date.data, expired_date=form.expired_date.data,
+                      price=form.price.data)
+        db.session.add(entry)
+        db.session.commit()
+        products = Stock.query.filter_by(user_id=current_user.id).all()
+        flash('Продукт додано', category='success')
+        return render_template('stock.html', form=form, products=products, title='Мої продукти')
+    else:
+        return render_template('stock.html', form=form, products=products, title='Мої продукти')
 
 
 if __name__ == '__main__':
