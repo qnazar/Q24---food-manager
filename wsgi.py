@@ -8,9 +8,9 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from models import db, User, Profile, Stock
+from models import db, User, Profile, Stock, Product, ProductsCategory
 from texts_ua import Texts
-from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm, StockForm
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm, StockForm, ProductForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -232,6 +232,33 @@ def stock():
         return render_template('stock.html', form=form, products=products, title='Мої продукти')
     else:
         return render_template('stock.html', form=form, products=products, title='Мої продукти')
+
+
+def select_query():
+    """Helper function to generate SelectField choices"""
+    choices = []
+    query = ProductsCategory.query.all()
+    for q in query:
+        choices.append((q.id, q.name))
+    return choices
+
+
+@app.route('/add_product', methods=['GET', 'POST'])
+@login_required
+def add_product():
+    form = ProductForm()
+    form.category.choices = select_query()
+    if form.validate_on_submit():
+        entry = Product(name=form.name.data, kcal=form.kcal.data,
+                        proteins=form.proteins.data, fats=form.fats.data,
+                        carbs=form.carbs.data, fibers=form.fibers.data,
+                        category=form.category.data)
+        db.session.add(entry)
+        db.session.commit()
+        flash('Продукт додано', category='success')
+
+    return render_template('add_product.html', form=form)
+
 
 
 if __name__ == '__main__':

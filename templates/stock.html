@@ -2,40 +2,55 @@
 
 {% block content %}
 
-    <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+
     {% for cat, msg in get_flashed_messages(with_categories=True) %}
+        <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
         <strong>{{ msg }}</strong>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
     {% endfor %}
-    </div>
+
 
 <div class="row container-fluid">
     <div class="col-5 container">
         <h3 style="text-align: center">Додати новий продукт</h3>
         <form method="post">
             {{ form.csrf_token }}
+            <div class="row">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-control") }}
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{ form.quantity.label(class="form-label") }}
+                    {{ form.quantity(class="form-control") }}
+                </div>
+                <div class="col">
+                    {{ form.measure.label(class="form-label") }}
+                    {{ form.measure(class="form-control") }}
+                </div>
+                <div class="col">
+                    {{ form.price.label(class="form-label") }}
+                    {{ form.price(class="form-control") }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    {{ form.produced_date.label(class="form-label") }}
+                    {{ form.produced_date(class="form-control") }}
+                </div>
+                <div class="col">
+                    {{ form.expired_date.label(class="form-label") }}
+                    {{ form.expired_date(class="form-control") }}
+                </div>
+            </div>
             <br>
-            {{ form.name.label(class="form-label") }}
-            {{ form.name(class="form-control") }}
-            <br>
-            {{ form.quantity.label(class="form-label") }}
-            {{ form.quantity(class="form-control") }}
-            <br>
-            {{ form.measure.label(class="form-label") }}
-            {{ form.measure(class="form-control") }}
-            <br>
-            {{ form.produced_date.label(class="form-label") }}
-            {{ form.produced_date(class="form-control") }}
-            <br>
-            {{ form.expired_date.label(class="form-label") }}
-            {{ form.expired_date(class="form-control") }}
-            <br>
-            {{ form.price.label(class="form-label") }}
-            {{ form.price(class="form-control") }}
-            <br>
-            {{ form.submit(class="btn btn-secondary") }}
+            <div class="row">
+                {{ form.submit(class="btn btn-secondary") }}
+            </div>
         </form>
     </div>
+
     <div class="col-7">
     <h3 style="text-align: center">Мої продукти</h3>
     {% if products %}

@@ -1,0 +1,40 @@
+{% extends'base.html' %}
+
+{% block content %}
+
+    {% for cat, msg in get_flashed_messages(with_categories=True) %}
+        <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+        <strong>{{ msg }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+
+    <div class="container shadow-lg p-3 mb-5 bg-body rounded">
+    <form method="post">
+        {{ form.hidden_tag() }}
+
+        {{ form.name.label }}
+        {{ form.name }}
+        <br>
+        {{ form.category.label }}
+        {{ form.category }}
+        <br>
+        {{ form.kcal.label }}
+        {{ form.kcal }}
+        <br>
+        {{ form.proteins.label }}
+        {{ form.proteins }}
+        <br>
+        {{ form.fats.label }}
+        {{ form.fats }}
+        <br>
+        {{ form.carbs.label }}
+        {{ form.carbs }}
+        <br>
+        {{ form.fibers.label }}
+        {{ form.fibers }}
+        <br>
+        {{ form.submit }}
+    </form>
+    </div>
+{% endblock %}

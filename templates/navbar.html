@@ -23,19 +23,15 @@
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="#">Що це?</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Індекс маси тіла</a></li>
-            <li><a class="dropdown-item" href="#">Денна норма калорій</a></li>
-            <li><a class="dropdown-item" href="#">Ідеальна вага</a></li>
-            <li><a class="dropdown-item" href="#">Денна норма води</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('calculations', mode='imt') }}">Індекс маси тіла</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('calculations', mode='kcal') }}">Денна норма калорій</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('calculations', mode='weight') }}">Ідеальна вага</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('calculations', mode='water') }}">Денна норма води</a></li>
           </ul>
         </li>
 
       <li class="nav-item">
           <a class="nav-link" href="{{ url_for('stock') }}">Мої продукти</a>
-      </li>
-
-      <li class="nav-item">
-          <a class="nav-link" href="{{ url_for('calculations', mode='water') }}">Розрахунки</a>
       </li>
 
       {% if not current_user.is_authenticated %}
@@ -52,6 +48,10 @@
           <a class="nav-link" href="{{ url_for('logout') }}">Вийти</a>
           </li>
       {% endif %}
+
+      <li class="nav-item">
+          <a class="nav-link" href="{{ url_for('add_product') }}">Додати продукт</a>
+      </li>
 
 
       </ul>
