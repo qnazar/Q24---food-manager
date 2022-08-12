@@ -21,14 +21,16 @@
         <div class="container-fluid">
 
             {% block message %}
-                <br>
+
                 {% for cat, msg in get_flashed_messages(with_categories=True) %}
+                    <br>
                     <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
                         <strong>{{ msg }}</strong>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
+                    <br>
                 {% endfor %}
-                <br>
+
 
             {% endblock %}
 

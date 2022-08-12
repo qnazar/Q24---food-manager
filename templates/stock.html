@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="row container-fluid">
-    <div class="col-5 container">
+    <div class="col-4 container">
         <h3 style="text-align: center">Додати новий продукт</h3>
         <form method="post">
             {{ form.csrf_token }}
@@ -40,9 +40,28 @@
                 {{ form.submit(class="btn btn-secondary") }}
             </div>
         </form>
+
+        <br>
+        <h3 style="text-align: center">Використати продукт</h3>
+        <form method="post">
+            {{ useform.csrf_token }}
+            <div class="row">
+                {{ useform.name.label(class='form-label') }}
+                {{ useform.name(class='form-control') }}
+            </div>
+            <div class="row">
+                {{ useform.quantity.label(class='form-label') }}
+                {{ useform.quantity(class='form-control') }}
+            </div>
+            <br>
+            <div class="row">
+                {{ useform.submit(class="btn btn-secondary") }}
+            </div>
+        </form>
+
     </div>
 
-    <div class="col-7">
+    <div class="col-8">
     <h3 style="text-align: center">Мої продукти</h3>
     {% if products %}
 
@@ -57,18 +76,23 @@
                 <th>Статус</th>
                 <th>Дата додавання</th>
             </tr>
-        {% for prod in products %}
+            {% for group, product in products %}
+            <tr>
+                <td colspan="8"><h6>{{ group }}</h6></td>
+            </tr>
+            {% for prod in product %}
             <tr>
                 <td>{{ prod.product_name }}</td>
                 <td>{{ prod.quantity }}</td>
                 <td>{{ prod.measure }}</td>
-                <td>{{ prod.produced_date }}</td>
-                <td>{{ prod.expired_date }}</td>
+                <td>{{ prod.produced }}</td>
+                <td>{{ prod.expired }}</td>
                 <td>{{ prod.price }}</td>
                 <td>{{ prod.status }}</td>
                 <td>{{ prod.date_added }}</td>
             </tr>
-        {% endfor %}
+                {% endfor %}
+            {% endfor %}
         </table>
     {% else %}
         <p>У вас ще немає внесених продуктів</p>

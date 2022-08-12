@@ -147,4 +147,12 @@ class Stock(db.Model):
     date_added = db.Column(db.Date, default=datetime.date.today())
     status = db.Column(db.String(64), default='new')  # new in-use fully-used expired thrown-away
 
+    @property
+    def produced(self):
+        return self.produced_date.strftime('%d-%m-%Y')
+
+    @property
+    def expired(self):
+        return self.expired_date.strftime('%d-%m-%Y')
+
 

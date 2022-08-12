@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, render_template, url_for, flash, redirect, session, request
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
@@ -10,7 +12,8 @@ import os
 
 from models import db, User, Profile, Stock, Product, ProductsCategory
 from texts_ua import Texts
-from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm, StockForm, ProductForm
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm, StockForm, ProductForm, \
+    UseFromStockForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -215,11 +218,40 @@ def calculations(mode):
     return render_template('calculations.html', form=form)
 
 
+def sort_the_stock(current_user):
+    products = Stock.query.filter_by(user_id=current_user.id).all()
+    if not products:
+        return []
+    last_day, tomorrow, this_week, long_term = [], [], [], []
+    for p in filter(lambda p: True if p.status in {'new', 'in-use'} else False, products):
+        if p.expired_date == datetime.date.today():
+            last_day.append(p)
+        elif p.expired_date == datetime.date.today() + datetime.timedelta(days=1):
+            tomorrow.append(p)
+        elif p.expired_date < datetime.date.today() + datetime.timedelta(days=7):
+            this_week.append(p)
+        else:
+            long_term.append(p)
+    products = [('Сьогодні', last_day), ('Завтра', tomorrow), ('Цього тижня', this_week), ('Довго', long_term)]
+    print(products)
+    return products
+
+
+def useform_choices():
+    choices = []
+    query = Stock.query.filter(Stock.user_id == current_user.id, Stock.status.in_(['new', 'in-use'])).all()
+    for q in query:
+        choices.append((q.id, f"{q.product_name} - {q.quantity} {q.measure} - {q.expired}"))
+    return choices
+
+
 @app.route('/stock', methods=['GET', 'POST'])
 @login_required
 def stock():
-    products = Stock.query.filter_by(user_id=current_user.id).all()
+    products = sort_the_stock(current_user)
     form = StockForm()
+    useform = UseFromStockForm()
+    useform.name.choices = useform_choices()
     if form.validate_on_submit():
         entry = Stock(user_id=current_user.id, product_name=form.name.data,
                       quantity=form.quantity.data, measure=form.measure.data,
@@ -227,11 +259,27 @@ def stock():
                       price=form.price.data)
         db.session.add(entry)
         db.session.commit()
-        products = Stock.query.filter_by(user_id=current_user.id).all()
+        products = sort_the_stock(current_user)
         flash('Продукт додано', category='success')
-        return render_template('stock.html', form=form, products=products, title='Мої продукти')
-    else:
-        return render_template('stock.html', form=form, products=products, title='Мої продукти')
+        return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти')
+    if useform.validate_on_submit():
+        item = Stock.query.filter(Stock.id == useform.name.data).one()
+        if useform.quantity.data < item.quantity:
+            item.quantity -= useform.quantity.data
+            item.status = 'in-use'
+            flash('Продукт у використанні', category='primary')
+        elif useform.quantity.data == item.quantity:
+            item.quantity = 0
+            item.status = 'fully-used'
+            flash("Ура! Продукт повністю використаний", category='primary')
+        else:
+            flash('Нема стільки продукту', category='danger')
+        db.session.commit()
+        products = sort_the_stock(current_user)
+        useform = UseFromStockForm()
+        useform.name.choices = useform_choices()
+        return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти')
+    return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти')
 
 
 def select_query():
