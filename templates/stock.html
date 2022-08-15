@@ -1,5 +1,14 @@
 {% extends 'base.html' %}
 
+{% block scrips %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
+        rel="stylesheet" type="text/css" />
+{% endblock %}
+
 {% block content %}
 
 <div class="row container-fluid">
@@ -49,9 +58,13 @@
                 {{ useform.name.label(class='form-label') }}
                 {{ useform.name(class='form-control') }}
             </div>
-            <div class="row">
-                {{ useform.quantity.label(class='form-label') }}
-                {{ useform.quantity(class='form-control') }}
+            <div class="row form-check form-check-inline"  >
+                {{ useform.full.label(class='form-check-label', type='checkbox') }}
+                {{ useform.full(class='form-check-input', type='checkbox') }}
+            </div>
+            <div class="row" id="quant">
+                {{ useform.quant.label(class='form-label') }}
+                {{ useform.quant(class='form-control') }}
             </div>
             <br>
             <div class="row">
@@ -99,4 +112,29 @@
     {% endif %}
     </div>
 </div>
+{#    <script>#}
+{#    function myFunc(){#}
+{#        let checked = document.getElementById('full').checked#}
+{#        alert(checked)#}
+{#        if (checked){#}
+{#             document.getElementById('quant').style.display = 'block';#}
+{#        } else {#}
+{#            document.getElementById('quant').style.display = 'none';#}
+{##}
+{#        }#}
+{#    }#}
+{#    myFunc()#}
+{#    </script>#}
+    <script>
+    $( function() {
+    var availableProds = [
+        {% for product in all_products %}
+            "{{product}}",
+        {% endfor %}
+    ];
+    $( "#name" ).autocomplete({
+      source: availableProds
+    });
+    } );
+  </script>
 {% endblock %}

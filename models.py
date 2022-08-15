@@ -131,6 +131,8 @@ class Product(db.Model):
 
     category = db.Column(db.Integer(), db.ForeignKey('product_category.id'))
 
+    def __repr__(self):
+        return self.name
 
 class Stock(db.Model):
     __tablename__ = 'stock'

@@ -173,7 +173,6 @@ def upload_picture():
     return render_template('upload_picture.html', title='Upload profile pic', form=form)
 
 
-
 @app.route('/delete_picture')
 @login_required
 def delete_picture():
@@ -187,14 +186,11 @@ def delete_picture():
     return redirect(url_for('user', id=current_user.id))
 
 
-# @app.route('/IMT')
-# def get_IMT():
-#     return render_template('imt.html')
-
-
 @app.route('/calculations/<mode>', methods=['GET', 'POST'])
 @login_required
 def calculations(mode):
+    if mode == 'about':
+        return render_template('calculations.html')
     form = CalcForm(weight=current_user.profile.weight)
     if form.validate_on_submit():
         current_user.profile.weight = form.weight.data
@@ -248,6 +244,7 @@ def useform_choices():
 @app.route('/stock', methods=['GET', 'POST'])
 @login_required
 def stock():
+    all_products = Product.query.all()
     products = sort_the_stock(current_user)
     form = StockForm()
     useform = UseFromStockForm()
@@ -259,16 +256,17 @@ def stock():
                       price=form.price.data)
         db.session.add(entry)
         db.session.commit()
+        print(entry)
         products = sort_the_stock(current_user)
         flash('Продукт додано', category='success')
-        return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти')
+        return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти', all_products=all_products)
     if useform.validate_on_submit():
         item = Stock.query.filter(Stock.id == useform.name.data).one()
-        if useform.quantity.data < item.quantity:
-            item.quantity -= useform.quantity.data
+        if useform.quant.data < item.quantity:
+            item.quantity -= useform.quant.data
             item.status = 'in-use'
             flash('Продукт у використанні', category='primary')
-        elif useform.quantity.data == item.quantity:
+        elif useform.quant.data == item.quantity:
             item.quantity = 0
             item.status = 'fully-used'
             flash("Ура! Продукт повністю використаний", category='primary')
@@ -278,8 +276,8 @@ def stock():
         products = sort_the_stock(current_user)
         useform = UseFromStockForm()
         useform.name.choices = useform_choices()
-        return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти')
-    return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти')
+        return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти', all_products=all_products)
+    return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти', all_products=all_products)
 
 
 def select_query():

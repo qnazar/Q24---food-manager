@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, EmailField, PasswordField, SubmitField, SelectField, DateField, IntegerField, \
-    FloatField, RadioField
+    FloatField, BooleanField
 from wtforms.validators import Email, DataRequired, Length, EqualTo, Regexp
 
 
@@ -66,7 +66,8 @@ class StockForm(FlaskForm):
 
 class UseFromStockForm(FlaskForm):
     name = SelectField('Продукт')
-    quantity = MyFloatField('Кількість')
+    full = BooleanField('Повністю')
+    quant = MyFloatField('Кількість')
     submit = SubmitField('Використати')
 
 

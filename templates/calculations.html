@@ -1,17 +1,66 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    <br>
+    <div class="row">
+        {% if form %}
+            <div class="col-12">
+        <div>
+            <h4>Перевір, чи правильно вказана твоя теперішня вага</h4>
+            <form class="form" method="post">
+                {{ form.hidden_tag() }}
 
-    <div class="container shadow-lg">
-        <h4>Перевір, чи правильно вказана твоя теперішня вага</h4>
-        <form class="form" method="post">
-            {{ form.hidden_tag() }}
-
-            {{ form.weight.label(class='form-label') }}
-            {{ form.weight(class='form-control') }}
-            <br>
-            {{ form.submit(class="btn btn-secondary")}}
-        </form>
+                {{ form.weight.label(class='form-label') }}
+                {{ form.weight(class='form-control') }}
+                <br>
+                {{ form.submit(class="btn btn-secondary")}}
+            </form>
+        </div>
+            </div>
+        {% endif %}
     </div>
+    <div class="row">
+        <div class="col-3">
+            <div class="card border-secondary mb-3" style="width: 18rem;">
+                <img src="../static/images/imt.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Індекс маси тіла</h5>
+                    <p class="card-text">Величина, що дозволяє оцінити ступінь відповідності маси людини та її зросту.</p>
+                    <a href="{{ url_for('calculations', mode='imt') }}" class="btn btn-primary">Обчислити</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card border-secondary mb-3" style="width: 18rem;">
+                <img src="../static/images/kcal.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Денна норма калорій</h5>
+                    <p class="card-text">Рекомендоване денне споживання поживних речовин в калоріях, позначається на етикетках продуктів харчування.</p>
+                    <a href="{{ url_for('calculations', mode='kcal') }}" class="btn btn-primary">Обчислити</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card border-secondary mb-3" style="width: 18rem;">
+                <img src="../static/images/water.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Денна норма води</h5>
+                    <p class="card-text">Перш за все потрібно відзначити, що для кожної людини добова потреба води індивідуальна – нам потрібно близько 30-40 мл рідини на кожен кілограм ваги.</p>
+                    <a href="{{ url_for('calculations', mode='water') }}" class="btn btn-primary">Обчислити</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-3">
+            <div class="card border-secondary mb-3" style="width: 18rem;">
+                <img src="../static/images/weight.jpg" class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">Ідеальна вага</h5>
+                    <p class="card-text">Найпершу і, мабуть, найбільш відому формулу для обчислення ідеальної ваги запропонував французький антрополог Поль Брока.</p>
+                    <a href="{{ url_for('calculations', mode='weight') }}" class="btn btn-primary">Обчислити</a>
+                </div>
+            </div>
+        </div>
+
+
 
 {% endblock %}
