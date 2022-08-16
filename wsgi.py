@@ -217,11 +217,11 @@ def calculations(mode):
 
 
 def sort_the_stock(current_user):
-    products = Stock.query.filter_by(user_id=current_user.id).all()
-    if not products:
+    stock: Stock = Stock.query.filter_by(user_id=current_user.id).all()
+    if not stock:
         return []
     expired, last_day, tomorrow, this_week, long_term = [], [], [], [], []
-    for p in filter(lambda p: True if p.status in {'new', 'in-use', 'expired'} else False, products):
+    for p in filter(lambda p: True if p.status in {'new', 'in-use', 'expired'} else False, stock):
         if p.expired_date < datetime.date.today():
             p.status = 'expired' if p.status != 'fully_used' else 'fully-used'
             expired.append(p)
@@ -234,9 +234,9 @@ def sort_the_stock(current_user):
         else:
             long_term.append(p)
         db.session.commit()
-    products = [('Зіпсовані', expired), ('Сьогодні', last_day), ('Завтра', tomorrow), ('Цього тижня', this_week), ('Довго', long_term)]
+    stock: list = [('Зіпсовані', expired), ('Сьогодні', last_day), ('Завтра', tomorrow), ('До тижня', this_week), ('Довго', long_term)]
     # print(products)
-    return products
+    return stock
 
 
 @app.route('/stock', methods=['GET', 'POST'])
@@ -249,8 +249,7 @@ def stock():
 
     form = StockForm()
     useproduct_form = UseProductForm()
-    # useform = UseFromStockForm()
-    # useform.name.choices = useform_choices()
+
     if form.validate_on_submit():
         try:
             product_id = Product.query.filter(Product.name == form.name.data).first().id
@@ -266,27 +265,20 @@ def stock():
             print(e)
         return render_template('stock.html', form=form, products=products, title='Мої продукти',
                                all_products=all_products, trash=trash_sum, useproduct_form=useproduct_form)
-    # if useform.validate_on_submit():
-    #     item = Stock.query.filter(Stock.id == useform.name.data).one()
-    #     if useform.quant.data < item.quantity:
-    #         price_per_unit = item.price / item.quantity
-    #         item.quantity -= useform.quant.data
-    #         item.status = 'in-use'
-    #         item.price = item.quantity * price_per_unit
-    #         flash('Продукт у використанні', category='primary')
-    #     elif useform.quant.data == item.quantity:
-    #         item.quantity = 0
-    #         item.price = 0
-    #         item.status = 'fully-used'
-    #         flash("Ура! Продукт повністю використаний", category='primary')
-    #     else:
-    #         flash('Нема стільки продукту', category='danger')
-    #     db.session.commit()
-    #     products = sort_the_stock(current_user)
-    #     useform = UseFromStockForm()
-    #     useform.name.choices = useform_choices()
-    #     return render_template('stock.html', form=form, useform=useform, products=products, title='Мої продукти',
-    #                            all_products=all_products, trash=trash_sum, useproduct_form=useproduct_form)
+    if useproduct_form.validate_on_submit():
+        used: Stock = Stock.query.get(useproduct_form.stock.data)
+        quantity = useproduct_form.quantity.data
+        if quantity <= used.quantity:
+            price_per_unit = used.price / used.quantity
+            used.quantity -= quantity
+            used.status = 'in-use' if used.quantity > 0 else 'fully-used'
+            used.price = used.quantity * price_per_unit
+            db.session.commit()
+            flash('Продукт використано')
+        else:
+            flash('Нема стільки продукту')
+        return render_template('stock.html', form=form, products=products, title='Мої продукти',
+                               all_products=all_products, trash=trash_sum, useproduct_form=useproduct_form)
     return render_template('stock.html', form=form, products=products, title='Мої продукти',
                            all_products=all_products, trash=trash_sum, useproduct_form=useproduct_form)
 
@@ -315,6 +307,15 @@ def add_product():
         flash('Продукт додано', category='success')
 
     return render_template('add_product.html', form=form)
+
+
+@app.route('/full_use/<int:id>')
+def full_use(id):
+    entry: Stock = Stock.query.get(id)
+    db.session.delete(entry)
+    db.session.commit()
+    flash('Продукт повністю використано!')
+    return redirect(url_for('stock'))
 
 
 @app.route('/throw_away/<int:id>')

@@ -1,195 +1,173 @@
 {% extends 'base.html' %}
 
+
 {% block scrips %}
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
-
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
 
-    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css"
-        rel="stylesheet" type="text/css" />
 {% endblock %}
 
+
 {% block content %}
-
-<div class="row container-fluid">
-    <div class="col-4 container">
-        <h3 style="text-align: center">Додати новий продукт</h3>
-        <form method="post">
-            {{ form.csrf_token }}
-            <div class="row">
-                {{ form.name.label(class="form-label") }}
-                {{ form.name(class="form-control") }}
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{ form.quantity.label(class="form-label") }}
-                    {{ form.quantity(class="form-control") }}
+<div class="container">
+{# Верхнє меню кнопок з формою додавання продуктів #}
+<div class="btn-toolbar py-2" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group me-2" role="group" aria-label="First group">
+        <div class="dropdown">
+            <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" data-bs-auto-close="false" aria-expanded="false">
+                Додати продукт
+            </button>
+            <form method="post" class="dropdown-menu p-2" id="add_prod_form">
+                {{ form.csrf_token }}
+                <div class="row p-1">
+                    <div class="col">
+                        <div class="form-floating">
+                            {{ form.name(class="form-control", placeholder='name') }}
+                            {{ form.name.label(class="form-label") }}
+                        </div>
+                    </div>
                 </div>
-                <div class="col">
-                    {{ form.measure.label(class="form-label") }}
-                    {{ form.measure(class="form-control") }}
+                <div class="row p-1">
+                    <div class="col">
+                        <div class="form-floating">
+                            {{ form.quantity(class="form-control", placeholder='quantity') }}
+                            {{ form.quantity.label(class="form-label") }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating">
+                            {{ form.measure(class="form-control", placeholder='measure') }}
+                            {{ form.measure.label(class="form-label") }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating">
+                            {{ form.price(class="form-control", placeholder='price') }}
+                            {{ form.price.label(class="form-label") }}
+                        </div>
+                    </div>
                 </div>
-                <div class="col">
-                    {{ form.price.label(class="form-label") }}
-                    {{ form.price(class="form-control") }}
+                <div class="row p-1">
+                    <div class="col">
+                        <div class="form-floating">
+                            {{ form.produced_date(class="form-control", placeholder='produced_date') }}
+                            {{ form.produced_date.label(class="form-label") }}
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-floating">
+                        {{ form.expired_date(class="form-control", placeholder='expired_date') }}
+                        {{ form.expired_date.label(class="form-label") }}
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    {{ form.produced_date.label(class="form-label") }}
-                    {{ form.produced_date(class="form-control") }}
+                <div class="row p-1">
+                    <div class="col">
+                    {{ form.submit(class="btn btn-primary") }}
+                    </div>
                 </div>
-                <div class="col">
-                    {{ form.expired_date.label(class="form-label") }}
-                    {{ form.expired_date(class="form-control") }}
-                </div>
-            </div>
-            <br>
-            <div class="row">
-                {{ form.submit(class="btn btn-secondary") }}
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
-{#        <br>#}
-{#        <h3 style="text-align: center">Використати продукт</h3>#}
-{#        <form method="post">#}
-{#            {{ useform.csrf_token }}#}
-{#            <div class="row">#}
-{#                {{ useform.name.label(class='form-label') }}#}
-{#                {{ useform.name(class='form-control') }}#}
-{#            </div>#}
-{#            <div class="row form-check form-check-inline" id="full" >#}
-{#                {{ useform.full.label(class='form-check-label', type='checkbox') }}#}
-{#                {{ useform.full(class='form-check-input', type='checkbox', onclick='myFunction()') }}#}
-{#            </div>#}
-{#            <div class="row" id="quant">#}
-{#                {{ useform.quant.label(class='form-label') }}#}
-{#                {{ useform.quant(class='form-control') }}#}
-{#            </div>#}
-{#            <br>#}
-{#            <div class="row">#}
-{#                {{ useform.submit(class="btn btn-secondary") }}#}
-{#            </div>#}
-{#        </form>#}
-{##}
-{#    </div>#}
+    <div class="btn-group me-2" role="group" aria-label="Second group">
+        <button type="button" class="btn btn-primary">Смітник</button>
+    </div>
+    <div class="btn-group" role="group" aria-label="Third group">
+        <button type="button" class="btn btn-primary">Скласти страву</button>
+    </div>
+</div>
 
-    <div class="col-8">
-    <div class="row">
+{# Карточки з продуктами #}
+<div class="row row-cols-1 row-cols-md-3 g-4 my-0">
         {% for group, product in products %}
         {% for prod in product %}
+        <div class="col">
 
-            <div class="card col-4" >
-                <div class="card-body">
-                    <h5 class="card-title">{{ prod.product|capitalize() }} <span class="badge bg-primary">{{ prod.status }}</span></h5>
-                    <h6 class="card-subtitle mb-2 text-muted">{{ prod.product.category }}</h6>
-                    <p>До {{ prod.expired}}</p>
-                    <a href="#" class="btn btn-sm btn-primary">Використати</a>
-                    <a href="{{ url_for('throw_away', id=prod.id) }}" class="btn btn-sm btn-primary">Викинути</a>
-                </div>
-            </div>
-        {% endfor %}
-        {% endfor %}
-</div>
+            <div class="card border-dark" >
 
-
-    <div class="row">
-    <h3 style="text-align: center">Мої продукти</h3>
-    {% if products %}
-
-        <table class="table table-striped">
-            <tr>
-                <th>Продукт</th>
-                <th>К-сть</th>
-                <th>Виготовлено</th>
-                <th>Придатний до</th>
-                <th>Вартість</th>
-                <th>Статус</th>
-                <th>Додано</th>
-                <th></th>
-            </tr>
-            {% for group, product in products %}
-            <tr>
-                <td colspan="8"><h6>{{ group }}</h6></td>
-                </tr>
-                {% for prod in product %}
-                <tr>
-                    <td>{{ prod.product_name }}</td>
-                    <td>{{ prod.quantity }} {{ prod.measure }}</td>
-                    <td>{{ prod.produced }}</td>
-                    <td>{{ prod.expired }}</td>
-                    <td>{{ prod.price }} грн</td>
-                    <td><span class="badge rounded-pill text-bg-primary">{{ prod.status }}</span></td>
-                    <td>{{ prod.date_added }}</td>
-                    <td>
-
-                        <div class="btn-group-vertical btn-group-sm" role="group" aria-label="Button group with nested dropdown">
-                            <div class="btn-group" role="group">
-                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                part
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-                                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-                                </ul>
+                    <div class="card-header" style="height: 100px;">
+                        <div class="row">
+                            <div class="col-10">
+                                <h5 class="card-title">{{ prod.product|capitalize() }}</h5>
                             </div>
-                            <button type="button" class="btn btn-primary">all</button>
-                            <a href="{{ url_for('throw_away', id=prod.id) }}" class="btn btn-primary" >away</a>
+                            <div class="col-2">
+                                <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">{{ prod.status }}</span></h5>
+                                <h5><span class="badge bg-primary position-absolute top-0 end-0 mx-3 my-5">{{ group }}</span></h5>
+                            </div>
                         </div>
-
-
-                        <div class="dropdown">
-                            <button class="btn rounded-pill btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Дії
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <div class="dropdown">
-                                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-                                            Використати частину
-                                        </button>
-                                        <form class="dropdown-menu p-4">
-                                            {{ useproduct_form.hidden_tag() }}
-                                            <div class="mb-3">
-                                                {{ useproduct_form.quantity }}
-                                            </div>
-                                                {{ useproduct_form.submit }}
-                                        </form>
-                                    </div>
-                                </li>
-                                <li><a class="dropdown-item" href="#">Використати частину</a></li>
-                                <li><a class="dropdown-item" href="#">Використати все</a></li>
-                                <li><a class="dropdown-item" href="{{ url_for('throw_away', id=prod.id) }}">Викинути</a></li>
+                        <div class="row">
+                            <h6 class="card-subtitle mb-2 text-muted">{{ prod.product.category }}</h6>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Кількість</li>
+                                <li class="list-group-item">Вжити до</li>
+                                <li class="list-group-item">Вартість</li>
                             </ul>
                         </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            {% endfor %}
-        </table>
-    {% else %}
-        <h3>У вас ще немає внесених продуктів</h3>
-    {% endif %}
-    </div>
-<hr>
-    <div class="row">
-        <h3>Викинуто за весь час - {{ trash }} грн</h3>
-    </div>
-    </div>
-</div>
-    <script>
-    function myFunc(){
-        let checked = document.getElementById('full').checked
-        if (checked){
-             document.getElementById('quant').style.display = 'none';
-        } else {
-            document.getElementById('quant').style.display = 'block';
+                        <div class="col-6">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">{{ prod.quantity }} {{ prod.measure }}</li>
+                                <li class="list-group-item">{{ prod.expired }}</li>
+                                <li class="list-group-item">{{ prod.price }} UAH</li>
+                            </ul>
+                        </div>
+                    </div>
 
-        }
-    }
-    myFunc()
-    </script>
-    <script>
+                    <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with buttons">
+                        <div class="btn-group me-2" role="group" aria-label="first">
+                            <a href="#" class="btn btn-primary">Інфо</a>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="second">
+                            <a href="{{ url_for('full_use', id=prod.id) }}" class="btn btn-primary">Використати</a>
+                            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                                <span class="visually-hidden">Toggle Dropdown</span>
+                            </button>
+                            <form method="post" class="dropdown-menu p-2" id="use_prod_form">
+                                {{ useproduct_form.csrf_token }}
+                                {{ useproduct_form.stock(class='d-none', value=prod.id) }}
+                                <div class="row p-1">
+                                    <div class="col">
+                                        <div class="form-floating">
+                                            {{ useproduct_form.quantity(class="form-control", placeholder='quantity') }}
+                                            {{ useproduct_form.quantity.label(class="form-label") }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row p-1">
+                                    <div class="col">
+                                        {{ useproduct_form.submit(class="btn btn-primary") }}
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="btn-group me-2" role="group" aria-label="third">
+                            <a href="{{ url_for('throw_away', id=prod.id) }}" class="btn btn-primary">Смітник</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endfor %}
+</div>
+
+
+{# Частина відображення смітника #}
+<hr>
+<div class="row">
+    <h3>Викинуто за весь час - {{ trash }} грн</h3>
+</div>
+
+</div>
+{# Скрипт для випадного пошуку #}
+<script>
     $( function() {
     var availableProds = [
         {% for product in all_products %}
@@ -200,5 +178,6 @@
       source: availableProds
     });
     } );
-  </script>
+</script>
+
 {% endblock %}

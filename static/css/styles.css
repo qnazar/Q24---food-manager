@@ -23,3 +23,11 @@
 }
 
 td {text-align: center;}
+
+.dropdown-menu#add_prod_form {
+    min-width: 400px;
+}
+
+#main_back {
+    background: none;
+}

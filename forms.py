@@ -55,20 +55,13 @@ class CalcForm(FlaskForm):
 
 
 class StockForm(FlaskForm):
-    name = StringField("Назва продукту")
+    name = StringField("Назва")
     quantity = MyFloatField("Кількість")
     measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
     produced_date = DateField("Дата виготовлення")
     expired_date = DateField("Вжити до")
     price = MyFloatField("Ціна")
     submit = SubmitField('Додати')
-
-
-# class UseFromStockForm(FlaskForm):
-#     name = SelectField('Продукт')
-#     full = BooleanField('Повністю')
-#     quant = MyFloatField('Кількість')
-#     submit = SubmitField('Використати')
 
 
 class ProductForm(FlaskForm):
@@ -83,5 +76,6 @@ class ProductForm(FlaskForm):
 
 
 class UseProductForm(FlaskForm):
+    stock = StringField('Продукт')
     quantity = MyFloatField('Кількість')
     submit = SubmitField('Використати')
