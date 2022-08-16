@@ -49,32 +49,51 @@
                 {{ form.submit(class="btn btn-secondary") }}
             </div>
         </form>
-
-        <br>
-        <h3 style="text-align: center">Використати продукт</h3>
-        <form method="post">
-            {{ useform.csrf_token }}
-            <div class="row">
-                {{ useform.name.label(class='form-label') }}
-                {{ useform.name(class='form-control') }}
-            </div>
-            <div class="row form-check form-check-inline"  >
-                {{ useform.full.label(class='form-check-label', type='checkbox') }}
-                {{ useform.full(class='form-check-input', type='checkbox') }}
-            </div>
-            <div class="row" id="quant">
-                {{ useform.quant.label(class='form-label') }}
-                {{ useform.quant(class='form-control') }}
-            </div>
-            <br>
-            <div class="row">
-                {{ useform.submit(class="btn btn-secondary") }}
-            </div>
-        </form>
-
     </div>
+{#        <br>#}
+{#        <h3 style="text-align: center">Використати продукт</h3>#}
+{#        <form method="post">#}
+{#            {{ useform.csrf_token }}#}
+{#            <div class="row">#}
+{#                {{ useform.name.label(class='form-label') }}#}
+{#                {{ useform.name(class='form-control') }}#}
+{#            </div>#}
+{#            <div class="row form-check form-check-inline" id="full" >#}
+{#                {{ useform.full.label(class='form-check-label', type='checkbox') }}#}
+{#                {{ useform.full(class='form-check-input', type='checkbox', onclick='myFunction()') }}#}
+{#            </div>#}
+{#            <div class="row" id="quant">#}
+{#                {{ useform.quant.label(class='form-label') }}#}
+{#                {{ useform.quant(class='form-control') }}#}
+{#            </div>#}
+{#            <br>#}
+{#            <div class="row">#}
+{#                {{ useform.submit(class="btn btn-secondary") }}#}
+{#            </div>#}
+{#        </form>#}
+{##}
+{#    </div>#}
 
     <div class="col-8">
+    <div class="row">
+        {% for group, product in products %}
+        {% for prod in product %}
+
+            <div class="card col-4" >
+                <div class="card-body">
+                    <h5 class="card-title">{{ prod.product|capitalize() }} <span class="badge bg-primary">{{ prod.status }}</span></h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ prod.product.category }}</h6>
+                    <p>До {{ prod.expired}}</p>
+                    <a href="#" class="btn btn-sm btn-primary">Використати</a>
+                    <a href="{{ url_for('throw_away', id=prod.id) }}" class="btn btn-sm btn-primary">Викинути</a>
+                </div>
+            </div>
+        {% endfor %}
+        {% endfor %}
+</div>
+
+
+    <div class="row">
     <h3 style="text-align: center">Мої продукти</h3>
     {% if products %}
 
@@ -82,49 +101,94 @@
             <tr>
                 <th>Продукт</th>
                 <th>К-сть</th>
-                <th>Міра</th>
                 <th>Виготовлено</th>
                 <th>Придатний до</th>
-                <th>Ціна</th>
+                <th>Вартість</th>
                 <th>Статус</th>
-                <th>Дата додавання</th>
+                <th>Додано</th>
+                <th></th>
             </tr>
             {% for group, product in products %}
             <tr>
                 <td colspan="8"><h6>{{ group }}</h6></td>
-            </tr>
-            {% for prod in product %}
-            <tr>
-                <td>{{ prod.product_name }}</td>
-                <td>{{ prod.quantity }}</td>
-                <td>{{ prod.measure }}</td>
-                <td>{{ prod.produced }}</td>
-                <td>{{ prod.expired }}</td>
-                <td>{{ prod.price }}</td>
-                <td>{{ prod.status }}</td>
-                <td>{{ prod.date_added }}</td>
-            </tr>
+                </tr>
+                {% for prod in product %}
+                <tr>
+                    <td>{{ prod.product_name }}</td>
+                    <td>{{ prod.quantity }} {{ prod.measure }}</td>
+                    <td>{{ prod.produced }}</td>
+                    <td>{{ prod.expired }}</td>
+                    <td>{{ prod.price }} грн</td>
+                    <td><span class="badge rounded-pill text-bg-primary">{{ prod.status }}</span></td>
+                    <td>{{ prod.date_added }}</td>
+                    <td>
+
+                        <div class="btn-group-vertical btn-group-sm" role="group" aria-label="Button group with nested dropdown">
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                part
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+                                    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
+                                </ul>
+                            </div>
+                            <button type="button" class="btn btn-primary">all</button>
+                            <a href="{{ url_for('throw_away', id=prod.id) }}" class="btn btn-primary" >away</a>
+                        </div>
+
+
+                        <div class="dropdown">
+                            <button class="btn rounded-pill btn-sm btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Дії
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <div class="dropdown">
+                                        <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
+                                            Використати частину
+                                        </button>
+                                        <form class="dropdown-menu p-4">
+                                            {{ useproduct_form.hidden_tag() }}
+                                            <div class="mb-3">
+                                                {{ useproduct_form.quantity }}
+                                            </div>
+                                                {{ useproduct_form.submit }}
+                                        </form>
+                                    </div>
+                                </li>
+                                <li><a class="dropdown-item" href="#">Використати частину</a></li>
+                                <li><a class="dropdown-item" href="#">Використати все</a></li>
+                                <li><a class="dropdown-item" href="{{ url_for('throw_away', id=prod.id) }}">Викинути</a></li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
                 {% endfor %}
             {% endfor %}
         </table>
     {% else %}
-        <p>У вас ще немає внесених продуктів</p>
+        <h3>У вас ще немає внесених продуктів</h3>
     {% endif %}
     </div>
+<hr>
+    <div class="row">
+        <h3>Викинуто за весь час - {{ trash }} грн</h3>
+    </div>
+    </div>
 </div>
-{#    <script>#}
-{#    function myFunc(){#}
-{#        let checked = document.getElementById('full').checked#}
-{#        alert(checked)#}
-{#        if (checked){#}
-{#             document.getElementById('quant').style.display = 'block';#}
-{#        } else {#}
-{#            document.getElementById('quant').style.display = 'none';#}
-{##}
-{#        }#}
-{#    }#}
-{#    myFunc()#}
-{#    </script>#}
+    <script>
+    function myFunc(){
+        let checked = document.getElementById('full').checked
+        if (checked){
+             document.getElementById('quant').style.display = 'none';
+        } else {
+            document.getElementById('quant').style.display = 'block';
+
+        }
+    }
+    myFunc()
+    </script>
     <script>
     $( function() {
     var availableProds = [

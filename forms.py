@@ -64,11 +64,11 @@ class StockForm(FlaskForm):
     submit = SubmitField('Додати')
 
 
-class UseFromStockForm(FlaskForm):
-    name = SelectField('Продукт')
-    full = BooleanField('Повністю')
-    quant = MyFloatField('Кількість')
-    submit = SubmitField('Використати')
+# class UseFromStockForm(FlaskForm):
+#     name = SelectField('Продукт')
+#     full = BooleanField('Повністю')
+#     quant = MyFloatField('Кількість')
+#     submit = SubmitField('Використати')
 
 
 class ProductForm(FlaskForm):
@@ -80,3 +80,8 @@ class ProductForm(FlaskForm):
     carbs = MyFloatField("Вуглеводи")
     fibers = MyFloatField("Клітковина")
     submit = SubmitField("Додати")
+
+
+class UseProductForm(FlaskForm):
+    quantity = MyFloatField('Кількість')
+    submit = SubmitField('Використати')
