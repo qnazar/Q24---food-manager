@@ -93,7 +93,12 @@
                                 <h5 class="card-title">{{ prod.product|capitalize() }}</h5>
                             </div>
                             <div class="col-2">
-                                <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">{{ prod.status }}</span></h5>
+                                {% if prod.status == ':(' %}
+                                    <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">&#129314</span></h5>
+                                {% else %}
+                                    <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">{{ prod.status }}</span></h5>
+                                {% endif %}
+
                                 <h5><span class="badge bg-primary position-absolute top-0 end-0 mx-3 my-5">{{ group }}</span></h5>
                             </div>
                         </div>
@@ -121,7 +126,7 @@
 
                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with buttons">
                         <div class="btn-group me-2" role="group" aria-label="first">
-                            <a href="#" class="btn btn-primary">Інфо</a>
+                            <a href="{{ url_for('product_info', id=prod.product.id) }}" class="btn btn-primary">Інфо</a>
                         </div>
                         <div class="btn-group me-2" role="group" aria-label="second">
                             <a href="{{ url_for('full_use', id=prod.id) }}" class="btn btn-primary">Використати</a>
@@ -129,19 +134,19 @@
                                 <span class="visually-hidden">Toggle Dropdown</span>
                             </button>
                             <form method="post" class="dropdown-menu p-2" id="use_prod_form">
-                                {{ useproduct_form.csrf_token }}
-                                {{ useproduct_form.stock(class='d-none', value=prod.id) }}
+                                {{ use_product_form.csrf_token }}
+                                {{ use_product_form.stock(class='d-none', value=prod.id) }}
                                 <div class="row p-1">
                                     <div class="col">
                                         <div class="form-floating">
-                                            {{ useproduct_form.quantity(class="form-control", placeholder='quantity') }}
-                                            {{ useproduct_form.quantity.label(class="form-label") }}
+                                            {{ use_product_form.quantity(class="form-control", placeholder='quantity') }}
+                                            {{ use_product_form.quantity.label(class="form-label") }}
                                         </div>
                                     </div>
                                 </div>
                                 <div class="row p-1">
                                     <div class="col">
-                                        {{ useproduct_form.submit(class="btn btn-primary") }}
+                                        {{ use_product_form.submit(class="btn btn-primary") }}
                                     </div>
                                 </div>
                             </form>

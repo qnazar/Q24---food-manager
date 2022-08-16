@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <div class="card my-5">
+            <div class="card-img-top">
+                <img src="#" alt="photo"/>
+            </div>
+            <div class="card-header">
+                <h4 class="card-title">{{ product.name }}</h4>
+                <h5 class="card-subtitle">{{ product.category.name }}</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Калорійність {{ product.kcal }}</p>
+                <p class="card-text">Вуглеводи {{ product.carbs }}</p>
+                <p class="card-text">Жири {{ product.fats }}</p>
+                <p class="card-text">Білки {{ product.proteins }}</p>
+                <p class="card-text">Клітковина {{ product.fibers }}</p>
+            </div>
+            <div class="card-footer">
+                <p class="card-text"></p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
