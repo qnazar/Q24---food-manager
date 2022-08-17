@@ -16,18 +16,18 @@ class MyFloatField(FloatField):
 
 
 class RegisterForm(FlaskForm):
-    email = EmailField('Email', validators=[DataRequired()])  # TODO email validator
-    password = PasswordField('Password', validators=[DataRequired(),
+    email = EmailField('Електронна адреса', validators=[DataRequired()])  # TODO email validator
+    password = PasswordField('Пароль', validators=[DataRequired(),
                                                      Length(5, 20, message="Pw should be at list %(min)d symbols"),
                                                      EqualTo('password_confirm', message="Passwords  need to match!")])
-    password_confirm = PasswordField('Confirm password', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    password_confirm = PasswordField('Підтвердежння пароля', validators=[DataRequired()])
+    submit = SubmitField('Зареєструватися')
 
 
 class LoginForm(FlaskForm):
-    email = EmailField('Email', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Submit')
+    email = EmailField('Електронна адреса', validators=[DataRequired()])
+    password = PasswordField('Пароль', validators=[DataRequired()])
+    submit = SubmitField('Увійти')
 
 
 class ProfileForm(FlaskForm):
@@ -35,12 +35,12 @@ class ProfileForm(FlaskForm):
     last_name = StringField("Прізвище", validators=[Length(max=128)])
     sex = SelectField("Стать", choices=[('Male', 'Чоловіча'), ('Female', 'Жіноча')])
     birthday = DateField("Дата народження", validators=[DataRequired()])
-    weight = MyFloatField("Вага (кг) 00.0")
-    height = IntegerField("Зріст (см)")
+    weight = MyFloatField("Вага")
+    height = IntegerField("Зріст")
     constitution = SelectField('Тип статури', choices=[('Normostenic', 'Нормостенік'),
                                                        ('Astenic', 'Астенік'),
                                                        ('Hyperstenic', 'Гіперстенік')])
-    activity = MyFloatField("Коефіцієнт активності 0.000")
+    activity = MyFloatField("Коефіцієнт активності")
     submit = SubmitField('Підтвердити')
 
 

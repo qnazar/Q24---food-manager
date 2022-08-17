@@ -19,27 +19,16 @@
     </head>
 
     <body>
+
         {% include 'navbar.html' %}
+        {% include 'flash.html' %}
 
         <div class="container-fluid" id="main_back">
-
-            {% block message %}
-
-                {% for cat, msg in get_flashed_messages(with_categories=True) %}
-                    <br>
-                    <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
-                        <strong>{{ msg }}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                    <br>
-                {% endfor %}
-
-
-            {% endblock %}
 
             {% block content %}
 
             {% endblock %}
+
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
     </body>

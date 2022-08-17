@@ -1,41 +1,120 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-    <div class="shadow-lg p-3 mb-5 bg-body rounded">
-        <form method="post" enctype="multipart/form-data">
+<div class="container py-4">
+    <div class="shadow-lg p-4 mb-5 bg-body rounded">
+        <form method="post">
             {{ form.hidden_tag() }}
+            <div class="row p-2">
+                <div class="col-3">
+                    <div class="form-floating">
+                        {{ form.first_name(class="form-control", value=person.first_name if person.first_name) }}
+                        {{ form.first_name.label(class="form-label") }}
+                    </div>
+                </div>
+                <div class="col-3">
+                     <div class="form-floating">
+                         {{ form.last_name(class="form-control", value=person.last_name if person.last_name) }}
+                         {{ form.last_name.label(class="form-label") }}
+                    </div>
+                </div>
+                <div class="col-3">
+                     <div class="form-floating">
+                         {{ form.sex(class="form-control", value=person.sex if person.sex) }}
+                         {{ form.sex.label(class="form-label") }}
+                    </div>
+                </div>
+                <div class="col-3">
+                     <div class="form-floating">
+                         {{ form.birthday(class="form-control", value=person.birthday if person.birthday) }}
+                         {{ form.birthday.label(class="form-label") }}
+                    </div>
+                </div>
+            </div>
 
-            {{ form.first_name.label(class="form-label") }}
-            {{ form.first_name(class="form-control", value=person.first_name if person.first_name) }}
-            <br>
-            {{ form.last_name.label(class="form-label") }}
-            {{ form.last_name(class="form-control", value=person.last_name if person.last_name) }}
-            <br>
-            {{ form.sex.label(class="form-label") }}
-            {{ form.sex(class="form-control", value=person.sex) }}
-            <br>
-            {{ form.birthday.label(class="form-label") }}
-            {{ form.birthday(class="form-control", value=person.birthday) }}
-            <br>
-            <hr>
-            <br>
-            {{ form.weight.label(class='form-label') }}
-            {{ form.weight(class="form-control", value=person.weight if person.weight) }}
-            <br>
-            {{ form.height.label(class='form-label') }}
-            {{ form.height(class="form-control", value=person.height if person.height) }}
-            <br>
-            {{ form.constitution.label(class='form-label') }}
-            {{ form.constitution(class="form-control", value=person.constitution) }}
-            <br>
-            {{ form.activity.label(class='form-label') }}
-            {{ form.activity(class="form-control", value=person.activity if person.activity) }}
-            <br>
-            {{ form.submit(class="btn btn-secondary") }}
-            <a href="{{ url_for('user', id=current_user.id) }}" class="btn btn-secondary">Скасувати</a>
-            <br>
+            <div class="row p-2">
+                <div class="col-3">
+                    <div class="form-floating input-group mb-3">
+                        {{ form.weight(class="form-control", value=person.weight if person.weight) }}
+                        {{ form.weight.label(class="form-label") }}
+                        <span class="input-group-text">кг</span>
+                    </div>
+                </div>
+                <div class="col-3">
+                     <div class="form-floating input-group mb-3">
+                         {{ form.height(class="form-control", value=person.height if person.height) }}
+                         {{ form.height.label(class="form-label") }}
+                         <span class="input-group-text">см</span>
+                    </div>
+                </div>
+                <div class="col-3">
+                     <div class="form-floating input-group mb-3">
+                         {{ form.constitution(class="form-control", value=person.constitution if person.constitution) }}
+                         {{ form.constitution.label(class="form-label") }}
+                         <span class="input-group-text">
+                             <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#constTypes">
+                                ?
+                             </button>
+                         </span>
+                    </div>
+                </div>
+                <div class="col-3">
+                     <div class="form-floating input-group mb-3">
+                         {{ form.activity(class="form-control", value=person.activity if person.activity) }}
+                         {{ form.activity.label(class="form-label") }}
+                         <span class="input-group-text">
+                             <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#activityRate">
+                                ?
+                             </button>
+                         </span>
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col-3">
+                    {{ form.submit(class="btn btn-primary") }}
+                    <a href="{{ url_for('user', id=current_user.id) }}" class="btn btn-primary">Скасувати</a>
+                </div>
+            </div>
         </form>
     </div>
+</div>
+
+<div class="modal fade" id="constTypes" tabindex="-1" aria-labelledby="constTypesModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="constitutionModalLabel">Типи статури</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Тут зробити опис
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="activityRate" tabindex="-1" aria-labelledby="activityRateModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="activityRateModalLabel">Коефіцієнт аквтиності</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Тут зробити опис
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
 {% endblock %}
