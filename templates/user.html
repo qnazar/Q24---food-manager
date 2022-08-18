@@ -7,7 +7,7 @@
             <div class="col-md-3">
                 <div class="row my-4">
                     <div class="col-md-12">
-                        <div class="card d-flex">
+                        <div class="card d-flex" id="main_info">
                             <div class="card-header">
                                 <h4 class="card-text">{{ person.first_name if person.first_name }} {{ person.last_name if person.last_name }}</h4>
                             </div>
@@ -25,7 +25,7 @@
                 </div>
                 <div class="row my-4">
                     <div class="col-md-12">
-                        <div class="card d-flex">
+                        <div class="card d-flex" id="update_btn">
                             <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Оновити дані</a>
                         </div>
                     </div>
@@ -34,9 +34,34 @@
             <div class="col-md-9">
                 <div class="row my-4">
                     <div class="col-md-8">
-                        <div class="card d-flex">
-                            <div class="card-header"></div>
-                            <div class="card-body"></div>
+                        <div class="card d-flex" id="my_products">
+                            <div class="card-header p-0">
+                                <h5 class="card-text">Мої продукти</h5>
+                            </div>
+                            <div class="card-body p-1">
+                                <table class="table table-sm table-striped-columns table-dark m-0">
+                                    <tr>
+                                        <td>Позицій</td>
+                                        <td>{{ stats['count'] }}</td>
+                                        <td>Вага</td>
+                                        <td>{{ stats['weight'] }}</td>
+                                        <td>Вартість</td>
+                                        <td>{{ stats['price'] }}</td>
+                                        <td>Ккал</td>
+                                        <td>{{ stats['kcal'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Білки</td>
+                                        <td>{{ stats['protein'] }}</td>
+                                        <td>Жири</td>
+                                        <td>{{ stats['fat'] }}</td>
+                                        <td>Вуглеводи</td>
+                                        <td>{{ stats['carb'] }}</td>
+                                        <td>Волокна</td>
+                                        <td>{{ stats['fiber'] }}</td>
+                                    </tr>
+                                </table>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -49,7 +74,7 @@
                 </div>
                 <div class="row my-4">
                     <div class="col-md-4">
-                        <div class="card d-flex">
+                        <div class="card d-flex" id="physical">
                             <div class="card-header p-0">
                                 <h5 class="card-title">Фізичні дані</h5>
                             </div>
@@ -94,9 +119,34 @@
                     <div class="col-md-8">
                         <div class="row">
                             <div class="col-md-12">
-                                <div class="card d-flex">
-                                    <div class="card-header"></div>
-                                    <div class="card-body"></div>
+                                <div class="card d-flex" id="my_trash_can">
+                                    <div class="card-header p-0">
+                                        <h5 class="card-title">Викинуто</h5>
+                                    </div>
+                                    <div class="card-body p-1">
+                                        <table class="table table-sm table-striped-columns table-dark m-0">
+                                    <tr>
+                                        <td>Позицій</td>
+                                        <td>{{ trash['count'] }}</td>
+                                        <td>Вага</td>
+                                        <td>{{ trash['weight'] }}</td>
+                                        <td>Вартість</td>
+                                        <td>{{ trash['price'] }}</td>
+                                        <td>Ккал</td>
+                                        <td>{{ trash['kcal'] }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Білки</td>
+                                        <td>{{ trash['protein'] }}</td>
+                                        <td>Жири</td>
+                                        <td>{{ trash['fat'] }}</td>
+                                        <td>Вуглеводи</td>
+                                        <td>{{ trash['carb'] }}</td>
+                                        <td>Волокна</td>
+                                        <td>{{ trash['fiber'] }}</td>
+                                    </tr>
+                                </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -119,116 +169,4 @@
             </div>
         </div>
     </div>
-
-
-
-
-    <hr>
-
-
-    <div class="container">
-    <div class="card-group py-4 g-4">
-        <div class="row g-2">
-            <div class="col-3 g-2">
-                <div class="card border border-3 border-dark rounded" style="height: 31rem">
-                    {% if current_user.profile_pic %}
-                        <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" class="card-img-top p-1 rounded">
-                    {% else %}
-                        <img src="../static/images/profiles/user-pic.png" class="card-img-top p-1 rounded">
-                    {% endif %}
-                    <div class="card-body text-center">
-                        <h5 class="card-text">{{ person.first_name if person.first_name }} {{ person.last_name if person.last_name }}</h5>
-                    </div>
-                    <div class="card-footer text-center">
-                        <a class="btn btn-dark btn-sm" href="{{ url_for('upload_picture') }}">Змінити фото</a>
-                        <a class="btn btn-dark btn-sm" href="{{ url_for('delete_picture') }}">Видалити фото</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-9 g-2">
-                <div class="row g-2 pb-3">
-                    <div class="col-8 g-2">
-                        <div class="card border border-3 border-dark rounded" style="height: 15rem">
-                            <div class="card-header">
-                                <h6 class="card-title">Запаси</h6>
-                            </div>
-                            <div class="card-body">
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-4 g-2">
-                        <div class="card border border-3 border-dark rounded" style="height: 15rem">
-                            <div class="card-header">
-                                <h6 class="card-title">Розрахунки</h6>
-                            </div>
-                            <div class="card-body">
-                                <div class="row p-1">
-                                    <a class="btn btn-dark btn-sm" href="{{ url_for('calculations', mode='kcal') }}">Денна норма ккал</a>
-                                </div>
-                                <div class="row p-1">
-                                    <a class="btn btn-dark btn-sm" href="{{ url_for('calculations', mode='imt') }}">Індек маси тіла</a>
-                                </div>
-                                <div class="row p-1">
-                                    <a class="btn btn-dark btn-sm" href="{{ url_for('calculations', mode='water') }}">Денна норма води</a>
-                                </div>
-                                <div class="row p-1">
-                                    <a class="btn btn-dark btn-sm" href="{{ url_for('calculations', mode='weight') }}">Ідеальна вага</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row g-2">
-                    <div class="col-4 g-2">
-                        <div class="card border border-3 border-dark rounded" style="height: 15rem">
-                            <div class="card-header">
-                                <h6 class="card-title">Фізичні дані</h6>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-group">
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Вага
-                                    <span class="badge bg-dark rounded-pill">{{ person.weight if person.weight }}</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Зріст
-                                    <span class="badge bg-dark rounded-pill">{{ person.height if person.height }}</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Активність
-                                    <span class="badge bg-dark rounded-pill">{{ person.activity if person.activity }}</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Статура
-                                    <span class="badge bg-dark rounded-pill">{{ person.constitution if person.constitution }}</span>
-                                  </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-8 g-2">
-                        <div class="card border border-3 border-dark rounded" style="height: 15rem">
-                            <div class="card-header">
-                                <h6 class="card-title">Смітник</h6>
-                            </div>
-                            <div class="card-body">
-
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-        </div>
-    </div>
-
-
-
-                <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Додати інфо</a>
-
-    </div>
-
 {% endblock %}

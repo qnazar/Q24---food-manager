@@ -115,6 +115,25 @@ def logout():
     return redirect(url_for('login'))
 
 
+def stock_statistics(stocks: list) -> dict:
+    result: dict = {'count': 0, 'weight': 0, 'price': 0, 'kcal': 0,
+                    'protein': 0, 'fat': 0, 'carb': 0, 'fiber': 0}
+    for stock in stocks:
+        measure = 1 if stock.measure in {'г', 'мл'} else 1000
+        if stock.measure == 'шт':  # для прикладу. Тільки для яєць
+            measure = 60  # Середня вага одного яйця - 60 г
+        product = stock.product
+        result['count'] += 1
+        result['weight'] += stock.quantity * measure
+        result['price'] += stock.price
+        result['kcal'] += product.kcal * stock.quantity * measure // 100
+        result['protein'] += product.proteins * stock.quantity * measure // 100
+        result['fat'] += product.fats * stock.quantity * measure // 100
+        result['carb'] += product.carbs * stock.quantity * measure // 100
+        result['fiber'] += product.fibers * stock.quantity * measure // 100
+    return result
+
+
 @app.route('/user/<int:id>', methods=['GET', 'POST'])
 @login_required
 def user(id):
@@ -125,7 +144,11 @@ def user(id):
         profile = Profile(id=current_user.id, user_id=current_user.id)
         db.session.add(profile)
         db.session.commit()
-    return render_template('user.html', title='Profile', user=current_user, person=profile)
+    stocks = Stock.query.filter_by(user_id=current_user.id).all()
+    stats = stock_statistics(stocks)
+    trashes = Trash.query.filter_by(user_id=current_user.id).all()
+    trash = stock_statistics(trashes)
+    return render_template('user.html', title='Profile', user=current_user, person=profile, stats=stats, trash=trash)
 
 
 @app.route('/user/<int:id>/update', methods=['GET', 'POST'])
@@ -223,11 +246,11 @@ def calculations(mode):
 
 
 def sort_the_stock(current_user):
-    stock: Stock = Stock.query.filter_by(user_id=current_user.id).all()
+    stock: Stock = Stock.query.filter_by(user_id=current_user.id).order_by(Stock.expired_date).all()
     if not stock:
         return []
     output = []
-    for s in sorted(stock, key=lambda s: s.expired):
+    for s in stock:
         date = s.expired_date - datetime.date.today()
         if date.days < 0:
             s.status = ':('
