@@ -119,7 +119,7 @@ def logout():
 @app.route('/user/<id>', methods=['GET', 'POST'])
 @login_required
 def user(id):
-    profile = Profile.query.get_or_None(id)
+    profile = Profile.query.get(id)
     if not profile:
         profile = Profile(id=current_user.id, user_id=current_user.id)
         db.session.add(profile)
@@ -129,7 +129,7 @@ def user(id):
 
 @app.route('/user/<id>/update', methods=['GET', 'POST'])
 def update_personal_info(id):
-    person = current_user.person
+    person = current_user.profile
     form = ProfileForm(sex=person.sex, constitution=person.constitution)
     if form.validate_on_submit():
         if form.first_name.data:
@@ -185,6 +185,7 @@ def delete_picture():
         os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
         current_user.profile_pic = None
         db.session.commit()
+        flash(message='Фото успішно видалено', category='success')
     return redirect(url_for('user', id=current_user.id))
 
 
@@ -199,20 +200,22 @@ def calculations(mode):
         db.session.commit()
         if mode == 'water':
             water = current_user.profile.water_norm()
+            current_user.profile.DWN = water
             flash(f'Твоя денна норма води - {water} мл!')
-            return redirect(url_for('user', id=current_user.id))
         elif mode == 'kcal':
             kcal = current_user.profile.daily_kcal_intake()
+            current_user.profile.DKI = kcal
             flash(f'Твоя денна норма калорій - {kcal} ккал!')
-            return redirect(url_for('user', id=current_user.id))
         elif mode == 'imt':
             imt = current_user.profile.body_mass_index()
+            current_user.profile.BMI = imt
             flash(f'Твій індекс маси тіла - {imt}!')
-            return redirect(url_for('user', id=current_user.id))
         elif mode == 'weight':
             weight = current_user.profile.ideal_weight()
+            current_user.profile.IW = weight
             flash(f'Твоя ідеальна вага - {weight} кг!')
-            return redirect(url_for('user', id=current_user.id))
+        db.session.commit()
+        return redirect(url_for('user', id=current_user.id))
     return render_template('calculations.html', form=form)
 
 
@@ -237,7 +240,7 @@ def sort_the_stock(current_user):
 def stock():
     all_products = Product.query.all()  # всі продукти з бази - для пошуку
     products = sort_the_stock(current_user)  # відсортовані продукти юзера
-    trash = Trash.query.filter(Trash.user_id == current_user.id).all()  # викинуті юзером продукти
+    trash = Trash.query.filter_by(user_id=current_user.id).all()  # викинуті юзером продукти
     trash_sum = sum([p.price for p in trash]) if trash else 0
 
     form = StockForm()

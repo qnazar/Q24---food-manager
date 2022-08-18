@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy, BaseQuery
+from flask_sqlalchemy import SQLAlchemy
 import datetime
 
 from sqlalchemy.orm import relationship
@@ -6,12 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
 
-class CustomQuery(BaseQuery):
-    def get_or_None(self, ident):
-        return self.get(ident) or None
-
-
-db = SQLAlchemy(query_class=CustomQuery)
+db = SQLAlchemy()
 
 
 class User(db.Model, UserMixin):
@@ -38,14 +33,6 @@ class User(db.Model, UserMixin):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    @property
-    def person(self):
-        return Profile.query.get(self.id)
-
-    # @property
-    # def stock(self):
-    #     return Stock.query(Stock).filter(Stock.user_id == self.id)
-
 
 class Profile(db.Model):
     __tablename__ = 'profile'
@@ -61,10 +48,14 @@ class Profile(db.Model):
     constitution = db.Column(db.String(32))
     activity = db.Column(db.Float())
 
-    # BMI = db.Column(db.Float(precision=2))
+    BMI = db.Column(db.Float())
+    DKI = db.Column(db.Integer)
+    DWN = db.Column(db.Integer)
+    IW = db.Column(db.Float())
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship('User', back_populates='profile')
+    dynamics = db.relationship('ProfileDynamic', backref='profile', lazy=True)
 
     def body_mass_index(self):
         BMI = self.weight / (self.height / 100) ** 2
@@ -104,6 +95,24 @@ class Profile(db.Model):
             iw = iw + iw/10
         return round(iw, 1)
 
+    def __str__(self):
+        return f'<Profile: {self.first_name} {self.last_name}>'
+
+
+class ProfileDynamic(db.Model):
+    __tablename__ = 'profile_dynamic'
+
+    id = db.Column(db.Integer, primary_key=True)
+    current_weight = db.Column(db.Float())
+    current_activity = db.Column(db.Float())
+    BMI = db.Column(db.Float())
+    DKI = db.Column(db.Integer)
+    DWN = db.Column(db.Integer)
+    IW = db.Column(db.Float())
+    entry_date = db.Column(db.Date, default=datetime.date.today())
+
+    profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'))
+
 
 class ProductsCategory(db.Model):
     __tablename__ = 'product_category'
@@ -111,9 +120,6 @@ class ProductsCategory(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     name = db.Column(db.String(128), nullable=False)
     products = db.relationship('Product', backref='category', lazy=True)
-
-    def __repr__(self):
-        return self.name
 
     def __str__(self):
         return self.name
@@ -135,7 +141,7 @@ class Product(db.Model):
     category_id = db.Column(db.Integer(), db.ForeignKey('product_category.id'))
 
     def __repr__(self):
-        return self.name
+        return f'<Product: {self.name}>'
 
 
 class Stock(db.Model):
@@ -160,6 +166,9 @@ class Stock(db.Model):
     def expired(self):
         return self.expired_date.strftime('%d-%m-%Y')
 
+    def __str__(self):
+        return f'<Stock: {self.id}>'
+
 
 class Trash(db.Model):
     __tablename__ = 'trash'
@@ -170,5 +179,5 @@ class Trash(db.Model):
     price = db.Column(db.Float())
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
 
-    # def __repr__(self):
-    #     return self.product_name
+    def __str__(self):
+        return f'<Trash: {self.product_name}'
