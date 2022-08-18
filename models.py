@@ -143,6 +143,9 @@ class Product(db.Model):
     def __repr__(self):
         return f'<Product: {self.name}>'
 
+    def __str__(self):
+        return self.name
+
 
 class Stock(db.Model):
     __tablename__ = 'stock'

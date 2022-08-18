@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, render_template, url_for, flash, redirect, request
+from flask import Flask, render_template, url_for, flash, redirect, request, abort
 from flask_migrate import Migrate
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
@@ -56,8 +56,7 @@ def registration():
         # checking for user with unique email
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:  # no such email was used
-            user = User(email=form.email.data,
-                        password_hash=generate_password_hash(form.password.data))
+            user = User(email=form.email.data, password_hash=generate_password_hash(form.password.data))
             # adding user to the db
             db.session.add(user)
             db.session.commit()
@@ -112,13 +111,15 @@ def login():
 @login_required
 def logout():
     logout_user()
-    flash('You have been logout', category='success')
+    flash('До зустрічі!', category='success')
     return redirect(url_for('login'))
 
 
-@app.route('/user/<id>', methods=['GET', 'POST'])
+@app.route('/user/<int:id>', methods=['GET', 'POST'])
 @login_required
 def user(id):
+    if id != current_user.id:
+        abort(403)
     profile = Profile.query.get(id)
     if not profile:
         profile = Profile(id=current_user.id, user_id=current_user.id)
@@ -127,8 +128,10 @@ def user(id):
     return render_template('user.html', title='Profile', user=current_user, person=profile)
 
 
-@app.route('/user/<id>/update', methods=['GET', 'POST'])
+@app.route('/user/<int:id>/update', methods=['GET', 'POST'])
 def update_personal_info(id):
+    if id != current_user.id:
+        abort(403)
     person = current_user.profile
     form = ProfileForm(sex=person.sex, constitution=person.constitution)
     if form.validate_on_submit():
@@ -248,7 +251,7 @@ def stock():
 
     if form.validate_on_submit():
         try:
-            product_id = Product.query.filter(Product.name == form.name.data).first().id
+            product_id = Product.query.filter_by(name=form.name.data).first().id
             entry = Stock(user_id=current_user.id, product_id=product_id,
                           quantity=form.quantity.data, measure=form.measure.data,
                           produced_date=form.produced_date.data, expired_date=form.expired_date.data,
@@ -258,6 +261,7 @@ def stock():
             products = sort_the_stock(current_user)
             flash('Продукт додано', category='success')
         except Exception as e:
+            flash('Наразі можна додати тільки продукти, які є в нашій базі.')
             print(e)
         return render_template('stock.html', form=form, products=products, title='Мої продукти',
                                all_products=all_products, trash=trash_sum, use_product_form=use_product_form)
@@ -328,8 +332,18 @@ def throw_away(id):
 
 @app.route('/product/<int:id>')
 def product_info(id):
-    product = Product.query.get(id)
+    product = Product.query.get_or_404(id)
     return render_template('product_info.html', product=product)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html')
+
+
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('403.html')
 
 
 if __name__ == '__main__':
