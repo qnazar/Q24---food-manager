@@ -12,7 +12,6 @@ import uuid
 import os
 
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash
-from texts_ua import Texts
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm, StockForm, ProductForm, UseProductForm
 
 app = Flask(__name__)
@@ -61,7 +60,8 @@ def registration():
             db.session.add(user)
             db.session.commit()
             login_user(user)  # autologin after registration
-            flash(Texts.reg_success, category='success')
+            flash('Реєстраці пройшла успішно. Лист з підтвердженням відправлено на вашу електронну адресу',
+                  category='success')
 
             # sending email confirmation
             token = s.dumps(user.email, salt='email-confirm')
