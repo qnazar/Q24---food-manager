@@ -124,13 +124,13 @@ def stock_statistics(stocks: list) -> dict:
             measure = 60  # Середня вага одного яйця - 60 г
         product = stock.product
         result['count'] += 1
-        result['weight'] += stock.quantity * measure
-        result['price'] += stock.price
-        result['kcal'] += product.kcal * stock.quantity * measure // 100
-        result['protein'] += product.proteins * stock.quantity * measure // 100
-        result['fat'] += product.fats * stock.quantity * measure // 100
-        result['carb'] += product.carbs * stock.quantity * measure // 100
-        result['fiber'] += product.fibers * stock.quantity * measure // 100
+        result['weight'] += round(stock.quantity * measure, 1)
+        result['price'] += round(stock.price, 2)
+        result['kcal'] += round(product.kcal * stock.quantity * measure // 100)
+        result['protein'] += round(product.proteins * stock.quantity * measure // 100, 1)
+        result['fat'] += round(product.fats * stock.quantity * measure // 100, 1)
+        result['carb'] += round(product.carbs * stock.quantity * measure // 100, 1)
+        result['fiber'] += round(product.fibers * stock.quantity * measure // 100, 1)
     return result
 
 
@@ -295,7 +295,7 @@ def stock():
             price_per_unit = used.price / used.quantity
             used.quantity -= quantity
             used.status = 'у вжитку' if used.quantity > 0 else 'fully-used'
-            used.price = used.quantity * price_per_unit
+            used.price = round(used.quantity * price_per_unit, 2)
             db.session.commit()
             flash('Продукт використано')
         else:
