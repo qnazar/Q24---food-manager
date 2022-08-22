@@ -16,15 +16,7 @@
         {% endif %}
 
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Розрахунки</a>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="{{ url_for('calculations', mode='about') }}">Що це?</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item" href="{{ url_for('calculations', mode='imt') }}">Індекс маси тіла</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('calculations', mode='kcal') }}">Денна норма калорій</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('calculations', mode='weight') }}">Ідеальна вага</a></li>
-                <li><a class="dropdown-item" href="{{ url_for('calculations', mode='water') }}">Денна норма води</a></li>
-            </ul>
+            <a class="nav-link" href="{{ url_for('calculations', mode='about') }}">Розрахунки</a>
         </li>
 
         <li class="nav-item">

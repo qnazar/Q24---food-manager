@@ -48,10 +48,13 @@ class Profile(db.Model):
     constitution = db.Column(db.String(32))
     activity = db.Column(db.Float())
 
-    BMI = db.Column(db.Float())
-    DKI = db.Column(db.Integer)
-    DWN = db.Column(db.Integer)
-    IW = db.Column(db.Float())
+    BMI = db.Column(db.Float())  # індекс маси тіла
+    BMR = db.Column(db.Integer)  # основний обмін
+    DKI = db.Column(db.Integer)  # денна норма ккал
+    DWN = db.Column(db.Integer)  # денна норма води
+    IW = db.Column(db.Float())   # ідеальна вага
+    min_weight = db.Column(db.Float())
+    max_weight = db.Column(db.Float())
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship('User', back_populates='profile')
@@ -64,36 +67,35 @@ class Profile(db.Model):
     def basic_metabolism_rate(self):
         """Формула Міффліна - Сан Жеора"""
         age = (datetime.date.today() - self.birthday).total_seconds() // (60 * 60 * 24 * 365)
-        if self.sex == 'Male':
-            BMR = 9.99 * self.weight + 6.25 * self.height - 4.92 * age + 5
-            # BMR = 88.36 + (13.4 * self.weight) + (4.8 * self.height) - (5.7 * age)
-        elif self.sex == 'Female':
-            BMR = 9.99 * self.weight + 6.25 * self.height - 4.92 * age - 161
-            # BMR = 447.6 + (9.2 * self.weight) + (3.1 + self.height) - (4.3 * age)
-        else:
-            raise ValueError
-        return int(BMR)
+        k = 5 if self.sex == 'Чоловіча' else -161
+        BMR = 9.99 * self.weight + 6.25 * self.height - 4.92 * age + k
+        return round(BMR)
 
     def daily_kcal_intake(self):
         BMR = self.basic_metabolism_rate()
         SDFE = BMR / 10  # специфічно-динамічна дія їжі
         return round((BMR + SDFE) * self.activity)
 
-    def highest_normal_weight(self):
-        return round(25 * (self.height/100)**2, 1)
-
     def water_norm(self):
-        hnw = self.highest_normal_weight()
+        hnw = self.max_normal_weight()
         overweight = self.weight - hnw if self.weight > hnw else 0
         return round(35 * self.weight + overweight * 20)
 
     def ideal_weight(self):
         iw = (self.height - 100) - (self.height - 150) / 4
-        if self.constitution == 'Astenic':
+        if self.constitution == 'Астенік':
             iw = iw - iw/10
-        elif self.constitution == 'Hyperstenic':
+        elif self.constitution == 'Гіперстенік':
             iw = iw + iw/10
         return round(iw, 1)
+
+    def max_normal_weight(self):
+        """Розрахунок Кетле"""
+        return round(25 * (self.height/100)**2, 1)
+
+    def min_normal_weight(self):
+        """Розрахунок Кетле"""
+        return round(18.5 * (self.height/100)**2, 1)
 
     def __str__(self):
         return f'<Profile: {self.first_name} {self.last_name}>'
@@ -105,10 +107,10 @@ class ProfileDynamic(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     current_weight = db.Column(db.Float())
     current_activity = db.Column(db.Float())
+    BMR = db.Column(db.Integer)
     BMI = db.Column(db.Float())
     DKI = db.Column(db.Integer)
     DWN = db.Column(db.Integer)
-    IW = db.Column(db.Float())
     entry_date = db.Column(db.Date, default=datetime.date.today())
 
     profile_id = db.Column(db.Integer, db.ForeignKey('profile.id'))

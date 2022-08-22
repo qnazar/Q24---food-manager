@@ -12,7 +12,7 @@ import uuid
 import os
 
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash
-from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, CalcForm, StockForm, ProductForm, UseProductForm
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -98,7 +98,7 @@ def login():
         if user:
             if check_password_hash(user.password_hash, form.password.data):
                 login_user(user)
-                flash('Login successfully', category='success')
+                flash('Вітаємо з поверненням', category='success')
                 return redirect(url_for('user', id=user.id))
             else:
                 flash('Неправильний пароль', category='danger')
@@ -152,6 +152,7 @@ def user(id):
 
 
 @app.route('/user/<int:id>/update', methods=['GET', 'POST'])
+@login_required
 def update_personal_info(id):
     if id != current_user.id:
         abort(403)
@@ -220,29 +221,33 @@ def delete_picture():
 def calculations(mode):
     if mode == 'about':
         return render_template('calculations.html')
-    form = CalcForm(weight=current_user.profile.weight)
-    if form.validate_on_submit():
-        current_user.profile.weight = form.weight.data
-        db.session.commit()
-        if mode == 'water':
-            water = current_user.profile.water_norm()
-            current_user.profile.DWN = water
-            flash(f'Твоя денна норма води - {water} мл!')
-        elif mode == 'kcal':
-            kcal = current_user.profile.daily_kcal_intake()
-            current_user.profile.DKI = kcal
-            flash(f'Твоя денна норма калорій - {kcal} ккал!')
-        elif mode == 'imt':
-            imt = current_user.profile.body_mass_index()
-            current_user.profile.BMI = imt
-            flash(f'Твій індекс маси тіла - {imt}!')
-        elif mode == 'weight':
-            weight = current_user.profile.ideal_weight()
-            current_user.profile.IW = weight
-            flash(f'Твоя ідеальна вага - {weight} кг!')
-        db.session.commit()
-        return redirect(url_for('user', id=current_user.id))
-    return render_template('calculations.html', form=form)
+    elif mode == 'BMR':
+        BMR = current_user.profile.basic_metabolism_rate()
+        current_user.profile.BMR = BMR
+        flash(f'Твій основний обмін - {BMR} ккал!')
+    elif mode == 'BMI':
+        BMI = current_user.profile.body_mass_index()
+        current_user.profile.BMR = BMI
+        flash(f'Твій індекс маси тіла - {BMI}!')
+        return render_template('calculations.html')
+    elif mode == 'DKI':
+        DKI = current_user.profile.daily_kcal_intake()
+        current_user.profile.DKI = DKI
+        flash(f'Твоя денна норма калорій - {DKI} ккал!')
+    elif mode == 'DWN':
+        DWN = current_user.profile.water_norm()
+        current_user.profile.DWN = DWN
+        flash(f'Твоя денна норма води - {DWN} мл!')
+    elif mode == 'IW':
+        min_weight = current_user.profile.min_normal_weight()
+        max_weight = current_user.profile.max_normal_weight()
+        med_weight = round((min_weight + max_weight) / 2, 1)
+        current_user.profile.IW = med_weight
+        current_user.profile.min_weight = min_weight
+        current_user.profile.max_weight = max_weight
+        flash(f'В ідеалі твоя вага повинна бути в межах {min_weight} - {max_weight} кг. Середня вага - {med_weight}кг.')
+    db.session.commit()
+    return redirect(url_for('calculations', mode='about'))
 
 
 def sort_the_stock(current_user):

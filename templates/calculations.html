@@ -1,65 +1,256 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <br>
-    <div class="row">
-        {% if form %}
-            <div class="col-12">
-        <div>
-            <h4>Перевір, чи правильно вказана твоя теперішня вага</h4>
-            <form class="form" method="post">
-                {{ form.hidden_tag() }}
-
-                {{ form.weight.label(class='form-label') }}
-                {{ form.weight(class='form-control') }}
-                <br>
-                {{ form.submit(class="btn btn-secondary")}}
-            </form>
-        </div>
-            </div>
-        {% endif %}
+<div class="container">
+    <div class="row py-3">
+        <h3 style="text-align: center">Базові показники потреб твого організму</h3>
     </div>
-    <div class="row">
-        <div class="col-3">
-            <div class="card border-secondary mb-3" style="width: 18rem;">
-                <img src="../static/images/imt.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Індекс маси тіла</h5>
-                    <p class="card-text">Величина, що дозволяє оцінити ступінь відповідності маси людини та її зросту.</p>
-                    <a href="{{ url_for('calculations', mode='imt') }}" class="btn btn-primary">Обчислити</a>
+    <div class="row row-cols-md-2 row-cols-1 g-4">
+        <div class="col">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="../static/images/base.png" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Величина основного обміну</h5>
+                            <p class="card-text">Показує кількість калорій на день, яка потрібна для підтримання основних життєвих функцій організму.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BMR">
+                                Дізнатися більше
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-3">
-            <div class="card border-secondary mb-3" style="width: 18rem;">
-                <img src="../static/images/kcal.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Денна норма калорій</h5>
-                    <p class="card-text">Рекомендоване денне споживання поживних речовин в калоріях, позначається на етикетках продуктів харчування.</p>
-                    <a href="{{ url_for('calculations', mode='kcal') }}" class="btn btn-primary">Обчислити</a>
+        <div class="col">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="../static/images/base.png" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Індекс маси тіла</h5>
+                            <p class="card-text">Співвідношення маси тіла та зросту, яке демонструє надлишок/дефіцит ваги. Один з основних індикаторів.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#BMI">
+                                Дізнатися більше
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-3">
-            <div class="card border-secondary mb-3" style="width: 18rem;">
-                <img src="../static/images/water.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Денна норма води</h5>
-                    <p class="card-text">Перш за все потрібно відзначити, що для кожної людини добова потреба води індивідуальна – нам потрібно близько 30-40 мл рідини на кожен кілограм ваги.</p>
-                    <a href="{{ url_for('calculations', mode='water') }}" class="btn btn-primary">Обчислити</a>
+        <div class="col">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="../static/images/base.png" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Денна норма калорій</h5>
+                            <p class="card-text">Денна потреба організму в калоріях для підтриманн поточної ваги з урахуванням фізичної активності.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#DKI">
+                                Дізнатися більше
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-3">
-            <div class="card border-secondary mb-3" style="width: 18rem;">
-                <img src="../static/images/weight.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">Ідеальна вага</h5>
-                    <p class="card-text">Найпершу і, мабуть, найбільш відому формулу для обчислення ідеальної ваги запропонував французький антрополог Поль Брока.</p>
-                    <a href="{{ url_for('calculations', mode='weight') }}" class="btn btn-primary">Обчислити</a>
+        <div class="col">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="../static/images/base.png" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Денна норма води</h5>
+                            <p class="card-text">Кількість води, яку рекомендовано випивати протягом дня. У людей з надлишковою вагою денна норма вища.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#DWN">
+                                Дізнатися більше
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+        <div class="col">
+            <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="../static/images/base.png" class="img-fluid rounded-start" alt="...">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">Ідеальна вага</h5>
+                            <p class="card-text">Діапазон ваги, в якому індекс маси тіла перебуває в нормі.</p>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#IW">
+                                Дізнатися більше
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# MODALS #}
+<div class="modal fade" id="BMR" tabindex="-1" aria-labelledby="BMRModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="BMRModalLabel">Величина основного обміну</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p><strong>ОСНОВНИЙ ОБМІН</strong> — це мінімальна кількість енергії, необхідна для підтримання життя організму в стані повного спокою. О.о. відображає інтенсивність метаболічних процесів в організмі, спрямованих на підтримку життєво важливих функцій. Значна частина цієї енергії витрачається на забезпечення діяльності серцево-судинної та дихальної систем, залоз внутрішньої секреції, нирок, печінки, ШКТ та інших органів</p>
+          <h6>Переконайся, що вказані твої актуальні дані.</h6>
+          <table class="table table-striped caption-top">
+              <caption>Показники</caption>
+              <tr>
+                  <td>Вага</td>
+                  <td>Зріст</td>
+              </tr>
+              <tr>
+                  <td>{{ current_user.profile.weight if current_user.profile.weight}} кг</td>
+                  <td>{{ current_user.profile.height if current_user.profile.height}} см</td>
+              </tr>
+          </table>
+      </div>
+      <div class="modal-footer">
+          <a href="{{ url_for('update_personal_info', id=current_user.id) }}" class="btn btn-primary">Оновити дані</a>
+          <a href="{{ url_for('calculations', mode='BMR') }}" class="btn btn-primary">Обчислити</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="BMI" tabindex="-1" aria-labelledby="BMIModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="BMIModalLabel">Індекс маси тіла</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p>Індекс маси тіла — величина, що дозволяє оцінити ступінь відповідності маси людини та її зросту, й тим самим, непрямо оцінити, чи є маса недостатньою, нормальною, надмірною.</p>
+          <h6>Переконайся, що вказані твої актуальні дані.</h6>
+          <table class="table table-striped caption-top">
+              <caption>Показники</caption>
+              <tr>
+                  <td>Вага</td>
+                  <td>Зріст</td>
+              </tr>
+              <tr>
+                  <td>{{ current_user.profile.weight if current_user.profile.weight}} кг</td>
+                  <td>{{ current_user.profile.height if current_user.profile.height}} см</td>
+              </tr>
+          </table>
+      </div>
+      <div class="modal-footer">
+          <a href="{{ url_for('update_personal_info', id=current_user.id) }}" class="btn btn-primary">Оновити дані</a>
+          <a href="{{ url_for('calculations', mode='BMI') }}" class="btn btn-primary">Обчислити</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="DKI" tabindex="-1" aria-labelledby="DKIModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="DKIModalLabel">Денна норма калорій</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p>Норма калорій в день, необхідна людині, залежить від багатьох чинників. Серед найбільш значущих показників слід виділити масу тіла, ріст і активність, а також вік. Для того, щоб визначити необхідну кількість калорій, потрібно спочатку розрахувати показники метаболізму - енергетичних витрат на підтримку основних процесів життєдіяльності (терморегуляція, травлення, кровообіг, дихання та ін.). В середньому для жінок мінімальні показники - від 1800 до 2200, а для чоловіків - від 2400 до 2800 ккал</p>
+          <h6>Переконайся, що вказані твої актуальні дані.</h6>
+          <table class="table table-striped caption-top">
+              <caption>Показники</caption>
+              <tr>
+                  <td>Вага</td>
+                  <td>Зріст</td>
+              </tr>
+              <tr>
+                  <td>{{ current_user.profile.weight if current_user.profile.weight}} кг</td>
+                  <td>{{ current_user.profile.height if current_user.profile.height}} см</td>
+              </tr>
+          </table>
+      </div>
+      <div class="modal-footer">
+          <a href="{{ url_for('update_personal_info', id=current_user.id) }}" class="btn btn-primary">Оновити дані</a>
+          <a href="{{ url_for('calculations', mode='DKI') }}" class="btn btn-primary">Обчислити</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="DWN" tabindex="-1" aria-labelledby="DWNModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="DWNModalLabel">Денна норма води</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p>8 склянок води в день, це трохи застаріла теорія, – наразі йдуть суперечки між науковцями щодо цих «8 склянок води» і про їх ефективність чи неефективність.
+
+Перш за все потрібно відзначити, що для кожної людини добова потреба води індивідуальна – нам потрібно близько 30-40 мл рідини на кожен кілограм ваги. Наприклад, при вазі 60 кг потрібно 1,8-2,4 л води, а при вазі 90 кг – 2,7-3,6 л води щодня. Частково, ця потреба може бути заповнена і з їжею, з якою надходить близько 40% добової потреби організму у воді, решту ми «наздоганяємо» напоями. Проте, варто пам’ятати, чай, сік, кава – це не вода, вони воду не замінюють.</p>
+          <h6>Переконайся, що вказані твої актуальні дані.</h6>
+          <table class="table table-striped caption-top">
+              <caption>Показники</caption>
+              <tr>
+                  <td>Вага</td>
+                  <td>Зріст</td>
+              </tr>
+              <tr>
+                  <td>{{ current_user.profile.weight if current_user.profile.weight}} кг</td>
+                  <td>{{ current_user.profile.height if current_user.profile.height}} см</td>
+              </tr>
+          </table>
+      </div>
+      <div class="modal-footer">
+          <a href="{{ url_for('update_personal_info', id=current_user.id) }}" class="btn btn-primary">Оновити дані</a>
+          <a href="{{ url_for('calculations', mode='DWN') }}" class="btn btn-primary">Обчислити</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="IW" tabindex="-1" aria-labelledby="IWModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="IWModalLabel">Ідеальна вага</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <p>Загалом існує безліч формул для розрахунку ідеальної ваги, але жодна з них не дає точного результату, оскільки даний показник дуже індивідуальний. Ми відштовхуємось від індексу маси тіла і надаємо проміжок значень, в якому твоя вага перебуває в нормі.</p>
+          <h6>Переконайся, що вказані твої актуальні дані.</h6>
+          <table class="table table-striped caption-top">
+              <caption>Показники</caption>
+              <tr>
+                  <td>Вага</td>
+                  <td>Зріст</td>
+              </tr>
+              <tr>
+                  <td>{{ current_user.profile.weight if current_user.profile.weight}} кг</td>
+                  <td>{{ current_user.profile.height if current_user.profile.height}} см</td>
+              </tr>
+          </table>
+      </div>
+      <div class="modal-footer">
+          <a href="{{ url_for('update_personal_info', id=current_user.id) }}" class="btn btn-primary">Оновити дані</a>
+          <a href="{{ url_for('calculations', mode='IW') }}" class="btn btn-primary">Обчислити</a>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 

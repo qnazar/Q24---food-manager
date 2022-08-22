@@ -33,25 +33,20 @@ class LoginForm(FlaskForm):
 class ProfileForm(FlaskForm):
     first_name = StringField("Ім’я", validators=[Length(max=128)])
     last_name = StringField("Прізвище", validators=[Length(max=128)])
-    sex = SelectField("Стать", choices=[('Male', 'Чоловіча'), ('Female', 'Жіноча')])
+    sex = SelectField("Стать", choices=[('Чоловіча', 'Чоловіча'), ('Жіноча', 'Жіноча')])
     birthday = DateField("Дата народження", validators=[DataRequired()])
-    weight = MyFloatField("Вага")
-    height = IntegerField("Зріст")
-    constitution = SelectField('Тип статури', choices=[('Normostenic', 'Нормостенік'),
-                                                       ('Astenic', 'Астенік'),
-                                                       ('Hyperstenic', 'Гіперстенік')])
-    activity = MyFloatField("Коефіцієнт активності")
+    weight = MyFloatField("Вага", validators=[DataRequired()])
+    height = IntegerField("Зріст", validators=[DataRequired()])
+    constitution = SelectField('Тип статури', choices=[('Нормостенік', 'Нормостенік'),
+                                                       ('Астенік', 'Астенік'),
+                                                       ('Гіперстенік', 'Гіперстенік')])
+    activity = MyFloatField("Коефіцієнт активності", default=1.2, validators=[DataRequired()])
     submit = SubmitField('Підтвердити')
 
 
 class ProfilePicForm(FlaskForm):
     profile_pic = FileField('Аватарка')
     submit = SubmitField('Змінити')
-
-
-class CalcForm(FlaskForm):
-    weight = MyFloatField("Вага (кг) 00.0")
-    submit = SubmitField('Отримати результат')
 
 
 class StockForm(FlaskForm):
