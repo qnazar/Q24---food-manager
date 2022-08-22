@@ -369,7 +369,8 @@ def shopping_list():
     all_products = Product.query.all()
     shop_list = ShoppingList.query.filter_by(user_id=current_user.id).all()
     form = ShoppingForm()
-    if form.validate_on_submit():
+    modal_form = StockForm()
+    if form.validate_on_submit() and form.add.data:
         product_id = Product.query.filter_by(name=form.name.data).first().id
         shop_item = ShoppingList(product_id=product_id, user_id=current_user.id,
                                  quantity=form.quantity.data, measure=form.measure.data)
@@ -377,24 +378,33 @@ def shopping_list():
         db.session.commit()
         flash('Новий продукт у списку покупок')
         shop_list = ShoppingList.query.filter_by(user_id=current_user.id).all()
-        return render_template('shopping_list.html', form=form, all_products=all_products, shop_list=shop_list)
-    return render_template('shopping_list.html', form=form, all_products=all_products, shop_list=shop_list)
+        return render_template('shopping_list.html', form=form, all_products=all_products,
+                               shop_list=shop_list, modal_form=modal_form)
+    if modal_form.validate_on_submit() and modal_form.submit.data:
+        product_id = Product.query.filter_by(name=modal_form.name.data).first().id
+        entry = Stock(user_id=current_user.id, product_id=product_id,
+                      quantity=modal_form.quantity.data, measure=modal_form.measure.data,
+                      produced_date=modal_form.produced_date.data, expired_date=modal_form.expired_date.data,
+                      price=modal_form.price.data)
+        shop_item = ShoppingList.query.filter_by(user_id=current_user.id, product_id=entry.product_id).first()
+        db.session.add(entry)
+        db.session.delete(shop_item)
+        db.session.commit()
+        flash("Продукт куплено та додано у ваші продукти!")
+        shop_list = ShoppingList.query.filter_by(user_id=current_user.id).all()
+        return render_template('shopping_list.html', form=form, all_products=all_products,
+                               shop_list=shop_list, modal_form=modal_form)
+    return render_template('shopping_list.html', form=form, all_products=all_products,
+                           shop_list=shop_list, modal_form=modal_form)
 
 
-@app.route('/buy_item/<int:id>')
+@app.route('/del_from_shop_list/<int:id>')
 @login_required
-def buy_item(id):
-    if id == 0:
-        items = ShoppingList.query.filter_by(user_id=current_user.id).all()
-        for item in items:
-            db.session.delete(item)
-        db.session.commit()
-        flash('Куплено всі продукти')
-    else:
-        item = ShoppingList.query.get(id)
-        db.session.delete(item)
-        db.session.commit()
-        flash('Продукт куплено!')
+def del_from_shop_list(id):
+    item = ShoppingList.query.get(id)
+    db.session.delete(item)
+    db.session.commit()
+    flash('Продукт видалено зі списку!')
     return redirect(url_for('shopping_list'))
 
 
