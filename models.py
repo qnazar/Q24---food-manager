@@ -139,6 +139,7 @@ class Product(db.Model):
     fibers = db.Column(db.Float())
     stocks = db.relationship('Stock', backref='product', lazy=True)
     trash = db.relationship('Trash', backref='product', lazy=True)
+    shop_list = db.relationship('ShoppingList', backref='product', lazy=True)
 
     category_id = db.Column(db.Integer(), db.ForeignKey('product_category.id'))
 
@@ -186,3 +187,17 @@ class Trash(db.Model):
 
     def __str__(self):
         return f'<Trash: {self.product_name}'
+
+
+class ShoppingList(db.Model):
+    __tablename__ = 'shopping_list'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Float())
+    measure = db.Column(db.String(16))
+    bought = db.Column(db.Boolean(), default=False)
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
+
+    def __str__(self):
+        return f'<Shoplist: {self.product_name}'
+

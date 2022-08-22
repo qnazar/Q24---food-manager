@@ -74,3 +74,14 @@ class UseProductForm(FlaskForm):
     stock = StringField('Продукт')
     quantity = MyFloatField('Кількість')
     submit = SubmitField('Використати')
+
+
+class ShoppingForm(FlaskForm):
+    name = StringField("Назва")
+    quantity = MyFloatField("Кількість")
+    measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
+    submit = SubmitField('Додати')
+
+
+class BuyForm(FlaskForm):
+    pass

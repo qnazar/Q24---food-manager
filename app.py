@@ -11,8 +11,8 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from models import db, User, Profile, Stock, Product, ProductsCategory, Trash
-from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm
+from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, ShoppingForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -362,6 +362,40 @@ def throw_away(id):
 def product_info(id):
     product = Product.query.get_or_404(id)
     return render_template('product_info.html', product=product)
+
+
+@app.route('/shopping_list', methods=['GET', 'POST'])
+def shopping_list():
+    all_products = Product.query.all()
+    shop_list = ShoppingList.query.filter_by(user_id=current_user.id).all()
+    form = ShoppingForm()
+    if form.validate_on_submit():
+        product_id = Product.query.filter_by(name=form.name.data).first().id
+        shop_item = ShoppingList(product_id=product_id, user_id=current_user.id,
+                                 quantity=form.quantity.data, measure=form.measure.data)
+        db.session.add(shop_item)
+        db.session.commit()
+        flash('Новий продукт у списку покупок')
+        shop_list = ShoppingList.query.filter_by(user_id=current_user.id).all()
+        return render_template('shopping_list.html', form=form, all_products=all_products, shop_list=shop_list)
+    return render_template('shopping_list.html', form=form, all_products=all_products, shop_list=shop_list)
+
+
+@app.route('/buy_item/<int:id>')
+@login_required
+def buy_item(id):
+    if id == 0:
+        items = ShoppingList.query.filter_by(user_id=current_user.id).all()
+        for item in items:
+            db.session.delete(item)
+        db.session.commit()
+        flash('Куплено всі продукти')
+    else:
+        item = ShoppingList.query.get(id)
+        db.session.delete(item)
+        db.session.commit()
+        flash('Продукт куплено!')
+    return redirect(url_for('shopping_list'))
 
 
 @app.errorhandler(404)

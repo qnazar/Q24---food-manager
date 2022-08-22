@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block scrips %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-4">
+            <h3 class="p-1">Додати</h3>
+            <form class="form-floating" id="form" method="post">
+                {{ form.csrf_token }}
+                <div class="row p-1">
+                    <div class="form-floating">
+                        {{ form.name(class='form-control') }}
+                        {{ form.name.label(class='form-label') }}
+                    </div>
+                </div>
+                <div class="row p-1">
+                    <div class="col form-floating">
+                        {{ form.quantity(class='form-control') }}
+                        {{ form.quantity.label(class='form-label') }}
+                    </div>
+                    <div class="col form-floating">
+                        {{ form.measure(class='form-control') }}
+                        {{ form.measure.label(class='form-label') }}
+                    </div>
+                </div>
+                <div class="row p-1">
+                    <div class="col">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-8">
+            <h3 class="p-1">Список покупок</h3>
+        <form method="post" action="#">
+            <table class="table table-striped-columns table-hover">
+                <thead class="text-center">
+                    <th>Чек</th>
+                    <th>Назва</th>
+                    <th>Кількість</th>
+                    <th><a href="{{ url_for('buy_item', id=0) }}">Купити все</a></th>
+                </thead>
+                <tbody>
+
+                    {% for shop_item in shop_list %}
+                        <tr>
+                    <td><input type="checkbox"></td>
+                    <td>{{ shop_item.product.name }}</td>
+                    <td>{{ shop_item.quantity }} {{ shop_item.measure }}</td>
+                    <td><a href="{{ url_for('buy_item', id=shop_item.id) }}" class="btn btn-primary">Купити</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </form>
+        </div>
+    </div>
+</div>
+
+
+    {# Скрипт для випадного пошуку #}
+<script>
+    $( function() {
+    var availableProds = [
+        {% for product in all_products %}
+            "{{product}}",
+        {% endfor %}
+    ];
+    $( "#name" ).autocomplete({
+      source: availableProds
+    });
+    } );
+</script>
+{% endblock %}
