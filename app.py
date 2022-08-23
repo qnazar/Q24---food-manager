@@ -148,7 +148,9 @@ def user(id):
     stats = stock_statistics(stocks)
     trashes = Trash.query.filter_by(user_id=current_user.id).all()
     trash = stock_statistics(trashes)
-    return render_template('user.html', title='Profile', user=current_user, person=profile, stats=stats, trash=trash)
+    shop_list = ShoppingList.query.filter_by(user_id=current_user.id).limit(5)
+    return render_template('user.html', title='Profile', user=current_user, person=profile, stats=stats, trash=trash,
+                           shop_list=shop_list)
 
 
 @app.route('/user/<int:id>/update', methods=['GET', 'POST'])

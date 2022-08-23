@@ -1,11 +1,31 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{{ super() }}
-
-<hr>
-<center><h1 class="text-dark">This is my Home Page</h1></center>
-    <p>Обчислення показників</p>
-    <p>Трекінг продуктів</p>
-    <p></p>
+<div class="container align-items-center">
+    <h1 class="text-dark text-center py-4">Q24 - менеджер їжі</h1>
+    <div class="row py-3">
+        <div class="col-6 d-flex align-items-center text-center">
+            <h5><strong>ТРЕКІНГ ПРОДУКТІВ</strong><br><br>Можливість слідкувати та контролювати кількість продуктів, які ти купляєш. Трекінг терміну придатності, щоб всі продукти були використані вчасно</h5>
+        </div>
+        <div class="col-6">
+            <img src="../static/images/primary.jpg" class="img-fluid"/>
+        </div>
+    </div>
+    <div class="row py-3">
+        <div class="col-6">
+            <img src="../static/images/primary.jpg" class="img-fluid"/>
+        </div>
+        <div class="col-6 d-flex align-items-center text-center">
+            <h5><strong>ПОКАЗНИКИ ЗДОРОВ’Я</strong><br><br>Слідкуй за своїм індексом маси тіла, визначай денну потребу в калоріях та прямуй до бажаної ваги з легкістю та впевненістю.</h5>
+        </div>
+    </div>
+    <div class="row py-3">
+        <div class="col-6 d-flex align-items-center text-center">
+            <h5><strong>СПИСОК ПОКУПОК</strong><br><br>Обери страви, склади список та уникай імпульсивних покупок в супермаркеті. Збережемо і фігуру, і гаманець.</h5>
+        </div>
+        <div class="col-6">
+            <img src="../static/images/primary.jpg" class="img-fluid"/>
+        </div>
+    </div>
+</div>
 {% endblock %}

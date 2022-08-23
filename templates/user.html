@@ -17,8 +17,8 @@
                         <img src="../static/images/profiles/user-pic.png" class="card-img-top p-1 rounded">
                     {% endif %}
                             <div class="card-footer text-center">
-                                <a class="btn btn-dark btn-sm" href="{{ url_for('upload_picture') }}">Змінити фото</a>
-                                <a class="btn btn-dark btn-sm" href="{{ url_for('delete_picture') }}">Видалити фото</a>
+                                <a class="btn btn-primary btn-sm" href="{{ url_for('upload_picture') }}">Змінити фото</a>
+                                <a class="btn btn-primary btn-sm" href="{{ url_for('delete_picture') }}">Видалити фото</a>
                             </div>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                 <div class="row my-4">
                     <div class="col-md-12">
                         <div class="card d-flex" id="update_btn">
-                            <a class="btn btn-dark" href="{{ url_for('update_personal_info', id=user.id) }}">Оновити дані</a>
+                            <a class="btn btn-primary" href="{{ url_for('update_personal_info', id=user.id) }}">Оновити дані</a>
                         </div>
                     </div>
                 </div>
@@ -39,7 +39,7 @@
                                 <h5 class="card-text">Мої продукти</h5>
                             </div>
                             <div class="card-body p-1">
-                                <table class="table table-sm table-striped-columns table-dark m-0">
+                                <table class="table table-sm table-striped-columns table-primary m-0">
                                     <tr>
                                         <td>Позицій</td>
                                         <td>{{ stats['count'] }}</td>
@@ -82,39 +82,39 @@
                                 <ul class="list-group">
                                   <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Вага
-                                    <span class="badge bg-dark rounded-pill">{{ person.weight if person.weight }} кг</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.weight if person.weight }} кг</span>
                                   </li>
                                   <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Зріст
-                                    <span class="badge bg-dark rounded-pill">{{ person.height if person.height }} см</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.height if person.height }} см</span>
                                   </li>
                                   <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Активність
-                                    <span class="badge bg-dark rounded-pill">{{ person.activity if person.activity }}</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.activity if person.activity }}</span>
                                   </li>
                                   <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Статура
-                                    <span class="badge bg-dark rounded-pill">{{ person.constitution if person.constitution }}</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.constitution if person.constitution }}</span>
                                   </li>
                                   <li class="list-group-item d-flex justify-content-between align-items-center">
                                     IMT
-                                    <span class="badge bg-dark rounded-pill">{{ person.BMI if person.BMI }}</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.BMI if person.BMI }}</span>
                                   </li>
                                   <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Норма ккал
-                                    <span class="badge bg-dark rounded-pill">{{ person.DKI if person.DKI }} ккал</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.DKI if person.DKI }} ккал</span>
                                   </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Норма води
-                                    <span class="badge bg-dark rounded-pill">{{ person.DWN if person.DWN }} мл</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.DWN if person.DWN }} мл</span>
                                   </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Межі ваги
-                                    <span class="badge bg-dark rounded-pill">{{ person.min_weight if person.IW }} - {{ person.max_weight if person.IW }} кг</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.min_weight if person.IW }} - {{ person.max_weight if person.IW }} кг</span>
                                   </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
                                     Ідеальна вага
-                                    <span class="badge bg-dark rounded-pill">{{ person.IW if person.IW }} кг</span>
+                                    <span class="badge bg-primary rounded-pill">{{ person.IW if person.IW }} кг</span>
                                   </li>
                                 </ul>
 
@@ -128,7 +128,7 @@
                                         <h5 class="card-title">Викинуто</h5>
                                     </div>
                                     <div class="card-body p-1">
-                                        <table class="table table-sm table-striped-columns table-dark m-0">
+                                        <table class="table table-sm table-striped-columns table-primary m-0">
                                     <tr>
                                         <td>Позицій</td>
                                         <td>{{ trash['count'] }}</td>
@@ -157,8 +157,19 @@
                         <div class="row my-4">
                             <div class="col-md-6">
                                 <div class="card d-flex">
-                                    <div class="card-header"></div>
-                                    <div class="card-body"></div>
+                                    <div class="card-header p-0">
+                                        <h5 class="card-title">Список покупок</h5>
+                                    </div>
+
+                                        <ul class="list-group list-group-flush">
+                                        {% for item in shop_list %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                {{ item.product.name[:15] + '...' if item.product.name|length > 15 else item.product.name }}
+                                                <span class="badge bg-primary rounded-pill">{{ item.quantity }} {{ item.measure }}</span>
+                                            </li>
+                                        {% endfor %}
+                                        </ul>
+
                                 </div>
                             </div>
                             <div class="col-md-6">
