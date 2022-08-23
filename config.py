@@ -16,5 +16,6 @@ MAIL_USE_SSL = True
 MAIL_USE_TLS = False
 
 FOLDER_TO_UPLOAD = 'static/images/profiles/'
+FOLDER_TO_UPLOAD_RECIPES = 'static/images/recipes/'
 
 API_KEY = 'RqP4PaFOvIjtix0Sdg0ddGKlBTe6Ryl41zcTAtSe'  # https://fdc.nal.usda.gov/

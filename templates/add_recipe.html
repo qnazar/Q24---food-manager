@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block scrips %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row py-4">
+        <div class="col-6">
+        <h2>Recipy</h2>
+            <form method="post" enctype="multipart/form-data">
+            {{ recipe_form.csrf_token }}
+                {% for field in recipe_form %}
+                {{ field.label }}{{ field }}
+                {% endfor %}
+            </form>
+        </div>
+        <div class="col-6">
+        <h2>Ingredient</h2>
+            <form method="post">
+            {{ ingredient_form.csrf_token }}
+                {% for field in ingredient_form %}
+                {{ field.label }}{{ field }}
+                {% endfor %}
+            </form>
+        </div>
+    </div>
+</div>
+
+
+    {# Скрипт для випадного пошуку #}
+<script>
+    $( function() {
+    var availableProds = [
+        {% for product in all_products %}
+            "{{product}}",
+        {% endfor %}
+    ];
+    $( "#product" ).autocomplete({
+      source: availableProds
+    });
+    } );
+</script>
+
+    <script>
+    $( function() {
+    var availableRecipes = [
+        {% for recipe in all_recipes %}
+            "{{recipe}}",
+        {% endfor %}
+    ];
+    $( "#recipe" ).autocomplete({
+      source: availableRecipes
+    });
+    } );
+</script>
+
+{% endblock %}

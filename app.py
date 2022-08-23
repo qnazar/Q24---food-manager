@@ -11,9 +11,9 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList
+from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
-    ShoppingForm, TrashFilterForm
+    ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -426,6 +426,56 @@ def trash_page():
                                    Trash.date_thrown >= options[form.choice.data]).all()
         stats = stock_statistics(trash)
     return render_template('trash.html', title='Смітник', trash=trash, form=form, stats=stats)
+
+
+@app.route('/recipes', methods=['GET', 'POST'])
+def all_recipes():
+    recipes = Recipe.query.all()
+    return render_template('recipes.html', title='Рецепти', recipes=recipes)
+
+
+@app.route('/recipe/<int:id>')
+def recipe(id):
+    recipe = Recipe.query.get(id)
+    if not recipe:
+        abort(404)
+    return render_template("recipe.html", title=recipe.name, recipe=recipe)
+
+
+@app.route('/recipes/add', methods=['GET', 'POST'])
+def add_recipe():
+    all_products = Product.query.all()
+    all_recipes = Recipe.query.all()
+    recipe_form = RecipeForm()
+    ingredient_form = IngredientForm()
+    if recipe_form.validate_on_submit() and recipe_form.submit.data:
+
+        picture = request.files['picture']
+        pic_filename = secure_filename(picture.filename)
+        pic_name = str(uuid.uuid1()) + '_' + pic_filename
+        picture.save(os.path.join(app.config['FOLDER_TO_UPLOAD_RECIPES'], pic_name))
+
+        new_rec = Recipe(name=recipe_form.name.data,
+                         time=recipe_form.time.data,
+                         complexity=recipe_form.complexity.data,
+                         description=recipe_form.description.data,
+                         instruction=recipe_form.instruction.data,
+                         picture=pic_name)
+        db.session.add(new_rec)
+        db.session.commit()
+        flash('Рецепт додано')
+    if ingredient_form.validate_on_submit() and ingredient_form.add.data:
+        recipe_id = Recipe.query.filter_by(name=ingredient_form.recipe.data).first().id
+        product_id = Product.query.filter_by(name=ingredient_form.product.data).first().id
+        ingred = Ingredient(recipe_id=recipe_id,
+                            product_id=product_id,
+                            quantity=ingredient_form.quantity.data,
+                            measure=ingredient_form.measure.data)
+        db.session.add(ingred)
+        db.session.commit()
+        flash('Інгредієнт додано')
+    return render_template('add_recipe.html', recipe_form=recipe_form, ingredient_form=ingredient_form,
+                           all_products=all_products, all_recipes=all_recipes)
 
 
 @app.errorhandler(404)

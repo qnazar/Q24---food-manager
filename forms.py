@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, EmailField, PasswordField, SubmitField, SelectField, DateField, IntegerField, \
-    FloatField, BooleanField
+    FloatField, BooleanField, TextAreaField
 from wtforms.validators import Email, DataRequired, Length, EqualTo, Regexp
 
 
@@ -88,3 +88,20 @@ class TrashFilterForm(FlaskForm):
                                             ('month', 'Місяць'), ('year', 'Рік')])
     submit = SubmitField('Показати')
 
+
+class RecipeForm(FlaskForm):
+    name = StringField("Назва")
+    time = IntegerField("Час приготування")
+    complexity = SelectField("Складність", choices=[('легко', 'легко'), ('середнє', 'середнє'), ('важко', 'важко')])
+    description = TextAreaField("Опис")
+    instruction = TextAreaField("Інструкція")
+    picture = FileField("Фото")
+    submit = SubmitField("Додати")
+
+
+class IngredientForm(FlaskForm):
+    recipe = StringField('Рецепт')
+    product = StringField("Продукт")
+    quantity = MyFloatField("Кількість")
+    measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
+    add = SubmitField("Додати")
