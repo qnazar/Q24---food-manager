@@ -183,10 +183,11 @@ class Trash(db.Model):
     quantity = db.Column(db.Float())
     measure = db.Column(db.String(16))
     price = db.Column(db.Float())
+    date_thrown = db.Column(db.Date, default=datetime.date.today())
     user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
 
     def __str__(self):
-        return f'<Trash: {self.product_name}'
+        return f'<Trash: {self.product.name}'
 
 
 class ShoppingList(db.Model):

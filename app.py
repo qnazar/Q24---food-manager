@@ -12,7 +12,8 @@ import uuid
 import os
 
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList
-from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, ShoppingForm
+from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
+    ShoppingForm, TrashFilterForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -408,6 +409,23 @@ def del_from_shop_list(id):
     db.session.commit()
     flash('Продукт видалено зі списку!')
     return redirect(url_for('shopping_list'))
+
+
+@app.route('/trash', methods=['GET', 'POST'])
+@login_required
+def trash_page():
+    form = TrashFilterForm()
+    trash = Trash.query.filter(Trash.user_id == current_user.id, Trash.date_thrown >= datetime.date.today()).all()
+    options = {'day': datetime.date.today(),
+               'week': datetime.date.today() - datetime.timedelta(days=7),
+               'month': datetime.date.today() - datetime.timedelta(days=30),
+               'year': datetime.date.today() - datetime.timedelta(days=365)}
+    stats = stock_statistics(trash)
+    if form.validate_on_submit():
+        trash = Trash.query.filter(Trash.user_id == current_user.id,
+                                   Trash.date_thrown >= options[form.choice.data]).all()
+        stats = stock_statistics(trash)
+    return render_template('trash.html', title='Смітник', trash=trash, form=form, stats=stats)
 
 
 @app.errorhandler(404)

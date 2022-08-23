@@ -82,3 +82,9 @@ class ShoppingForm(FlaskForm):
     measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
     add = SubmitField('Додати')
 
+
+class TrashFilterForm(FlaskForm):
+    choice = SelectField('Період', choices=[('day', 'Сьогодні'), ('week', 'Тиждень'),
+                                            ('month', 'Місяць'), ('year', 'Рік')])
+    submit = SubmitField('Показати')
+
