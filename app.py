@@ -11,9 +11,9 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient
+from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient, Meal
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
-    ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm
+    ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, MealForm, AddMealForm
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -476,6 +476,54 @@ def add_recipe():
         flash('Інгредієнт додано')
     return render_template('add_recipe.html', recipe_form=recipe_form, ingredient_form=ingredient_form,
                            all_products=all_products, all_recipes=all_recipes)
+
+
+@app.route('/meal', methods=['GET', 'POST'])
+def meal(products={}, results=[0, 0, 0, 0, 0, 0]):
+    all_products = Product.query.all()
+    products_form = MealForm()
+    meal_form = AddMealForm()
+    if products_form.validate_on_submit() and products_form.add.data:
+
+        product = Product.query.filter_by(name=products_form.product.data).first()
+        products[product] = [products_form.quantity.data, products_form.measure.data]
+
+        quant = 1 if products_form.measure.data in {'г', 'мл'} else 1000
+        if products_form.measure.data == 'шт':
+            quant = 60
+        results[0] += products_form.quantity.data * quant
+
+        kcal = round(product.kcal * products_form.quantity.data * quant // 100)
+        products[product].append(kcal)
+        results[1] += kcal
+        protein = round(product.proteins * products_form.quantity.data * quant / 100, 1)
+        products[product].append(protein)
+        results[2] += protein
+        fat = round(product.fats * products_form.quantity.data * quant / 100, 1)
+        products[product].append(fat)
+        results[3] += fat
+        carbs = round(product.carbs * products_form.quantity.data * quant / 100, 1)
+        products[product].append(carbs)
+        results[4] += carbs
+        fibers = round(product.fibers * products_form.quantity.data * quant / 100, 1)
+        products[product].append(fibers)
+        results[5] += fibers
+
+    if meal_form.validate_on_submit() and meal_form.submit.data:
+        new_meal = Meal(name=meal_form.name.data,
+                        type=meal_form.meal.data,
+                        weight=results[0], kcal=results[1], protein=results[2],
+                        fat=results[3], carbs=results[4], fibers=results[5],
+                        user_id=current_user.id)
+        db.session.add(new_meal)
+        db.session.commit()
+        flash("Страву додано")
+        products = {}
+        results = [0, 0, 0, 0, 0, 0]
+        return render_template('meal.html', products_form=products_form, results=results,
+                               meal_form=meal_form, products=products, all_products=all_products)
+    return render_template('meal.html', products_form=products_form, results=results,
+                           meal_form=meal_form, products=products, all_products=all_products)
 
 
 @app.errorhandler(404)

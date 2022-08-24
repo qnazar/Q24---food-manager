@@ -19,8 +19,9 @@
     </head>
 
     <body>
-
+        {% block navbar %}
         {% include 'navbar.html' %}
+        {% endblock %}
         {% include 'flash.html' %}
 
         <div class="container-fluid" id="main_back">

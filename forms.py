@@ -105,3 +105,18 @@ class IngredientForm(FlaskForm):
     quantity = MyFloatField("Кількість")
     measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
     add = SubmitField("Додати")
+
+
+class MealForm(FlaskForm):
+
+    product = StringField('Продукт')
+    quantity = MyFloatField('Кількість')
+    measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
+    add = SubmitField('Додати')
+
+
+class AddMealForm(FlaskForm):
+    meal = SelectField("Прийом", choices=[('Сніданок', 'Сніданок'), ('Обід', 'Обід'),
+                                          ('Вечеря', 'Вечеря'), ('Перекус', 'Перекус')])
+    name = StringField('Назва страви', default='Без назви')
+    submit = SubmitField('Додати')

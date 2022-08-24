@@ -226,3 +226,19 @@ class Ingredient(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False, primary_key=True)
     quantity = db.Column(db.Float())
     measure = db.Column(db.String(16))
+
+
+class Meal(db.Model):
+    __tablename__ = 'meal'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=True)
+    type = db.Column(db.String)
+    weight = db.Column(db.Float)
+    kcal = db.Column(db.Integer)
+    protein = db.Column(db.Float)
+    fat = db.Column(db.Float)
+    carbs = db.Column(db.Float)
+    fibers = db.Column(db.Float)
+    time = db.Column(db.DateTime, default=datetime.datetime.now())
+
+    user_id = db.Column(db.Integer(), db.ForeignKey('user.id'))
