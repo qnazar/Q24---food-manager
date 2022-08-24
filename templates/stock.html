@@ -82,34 +82,35 @@
     </div>
 </div>
 
+
 {# Карточки з продуктами #}
-<div class="row row-cols-1 row-cols-md-3 g-4 my-0">
+    <div class="row row-cols-1 row-cols-md-3 g-4 my-0">
         {% for group, product in products %}
         {% for prod in product %}
         <div class="col">
 
             <div class="card border-dark" >
 
-                    <div class="card-header" style="height: 100px;">
-                        <div class="row">
-                            <div class="col-10">
-                                <h5 class="card-title">{{ prod.product|capitalize() }}</h5>
-                            </div>
-                            <div class="col-2">
-                                {% if prod.status == ':(' %}
-                                    <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">&#129314</span></h5>
-                                {% else %}
-                                    <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">{{ prod.status }}</span></h5>
-                                {% endif %}
-
-                                <h5><span class="badge bg-primary position-absolute top-0 end-0 mx-3 my-5">{{ group }}</span></h5>
-                            </div>
+                <div class="card-header" style="height: 100px;">
+                    <div class="row">
+                        <div class="col-10">
+                            <h5 class="card-title">{{ prod.product|capitalize() }}</h5>
                         </div>
-                        <div class="row">
-                            <h6 class="card-subtitle mb-2 text-muted">{{ prod.product.category }}</h6>
+                        <div class="col-2">
+                            {% if prod.status == ':(' %}
+                                <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">&#129314</span></h5>
+                            {% else %}
+                                <h5><span class="badge bg-primary position-absolute top-0 end-0 m-3">{{ prod.status }}</span></h5>
+                            {% endif %}
+
+                            <h5><span class="badge bg-primary position-absolute top-0 end-0 mx-3 my-5">{{ group }}</span></h5>
                         </div>
                     </div>
-                    <div class="card-body">
+                    <div class="row">
+                        <h6 class="card-subtitle mb-2 text-muted">{{ prod.product.category }}</h6>
+                    </div>
+                </div>
+                <div class="card-body">
                     <div class="row">
                         <div class="col-6">
                             <ul class="list-group list-group-flush">
@@ -158,14 +159,13 @@
                             <a href="{{ url_for('throw_away', id=prod.id) }}" class="btn btn-primary">Смітник</a>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
         {% endfor %}
         {% endfor %}
+    </div>
 </div>
-
 {# Скрипт для випадного пошуку #}
 <script>
     $( function() {

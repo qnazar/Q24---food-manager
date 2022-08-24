@@ -119,19 +119,19 @@ def logout():
 def stock_statistics(stocks: list) -> dict:
     result: dict = {'count': 0, 'weight': 0, 'price': 0, 'kcal': 0,
                     'protein': 0, 'fat': 0, 'carb': 0, 'fiber': 0}
-    for stock in stocks:
-        measure = 1 if stock.measure in {'г', 'мл'} else 1000
-        if stock.measure == 'шт':  # для прикладу. Тільки для яєць
+    for item in stocks:
+        measure = 1 if item.measure in {'г', 'мл'} else 1000
+        if item.measure == 'шт':  # для прикладу. Тільки для яєць
             measure = 60  # Середня вага одного яйця - 60 г
-        product = stock.product
+        product = item.product
         result['count'] += 1
-        result['weight'] += round(stock.quantity * measure, 1)
-        result['price'] += round(stock.price, 2)
-        result['kcal'] += round(product.kcal * stock.quantity * measure // 100)
-        result['protein'] += round(product.proteins * stock.quantity * measure // 100, 1)
-        result['fat'] += round(product.fats * stock.quantity * measure // 100, 1)
-        result['carb'] += round(product.carbs * stock.quantity * measure // 100, 1)
-        result['fiber'] += round(product.fibers * stock.quantity * measure // 100, 1)
+        result['weight'] += round(item.quantity * measure, 1)
+        result['price'] += round(item.price, 2)
+        result['kcal'] += round(product.kcal * item.quantity * measure // 100)
+        result['protein'] += round(product.proteins * item.quantity * measure // 100, 1)
+        result['fat'] += round(product.fats * item.quantity * measure // 100, 1)
+        result['carb'] += round(product.carbs * item.quantity * measure // 100, 1)
+        result['fiber'] += round(product.fibers * item.quantity * measure // 100, 1)
     return result
 
 
@@ -253,19 +253,19 @@ def calculations(mode):
     return redirect(url_for('calculations', mode='about'))
 
 
-def sort_the_stock(current_user):
-    stock: Stock = Stock.query.filter_by(user_id=current_user.id).order_by(Stock.expired_date).all()
-    if not stock:
+def sort_the_stock():
+    users_stock = Stock.query.filter_by(user_id=current_user.id).order_by(Stock.expired_date).all()
+    if not users_stock:
         return []
     output = []
-    for s in stock:
-        date = s.expired_date - datetime.date.today()
+    for item in users_stock:
+        date = item.expired_date - datetime.date.today()
         if date.days < 0:
-            s.status = ':('
+            item.status = ':('
             db.session.commit()
-            output.append(('', [s]))
+            output.append(('', [item]))
         else:
-            output.append((f'{date.days} дн', [s]))
+            output.append((f'{date.days} дн', [item]))
     return output
 
 
@@ -273,7 +273,7 @@ def sort_the_stock(current_user):
 @login_required
 def stock():
     all_products = Product.query.all()  # всі продукти з бази - для пошуку
-    products = sort_the_stock(current_user)  # відсортовані продукти юзера
+    products = sort_the_stock()  # відсортовані продукти юзера
     trash = Trash.query.filter_by(user_id=current_user.id).all()  # викинуті юзером продукти
     trash_sum = sum([p.price for p in trash]) if trash else 0
 
@@ -401,9 +401,9 @@ def shopping_list():
                            shop_list=shop_list, modal_form=modal_form)
 
 
-@app.route('/del_from_shop_list/<int:id>')
+@app.route('/shopping_list/remove/<int:id>')
 @login_required
-def del_from_shop_list(id):
+def remove_from_shopping_list(id):
     item = ShoppingList.query.get(id)
     db.session.delete(item)
     db.session.commit()
@@ -429,13 +429,13 @@ def trash_page():
 
 
 @app.route('/recipes', methods=['GET', 'POST'])
-def all_recipes():
-    recipes = Recipe.query.all()
-    return render_template('recipes.html', title='Рецепти', recipes=recipes)
+def recipes():
+    all_recipes = Recipe.query.all()
+    return render_template('recipes.html', title='Рецепти', recipes=all_recipes)
 
 
 @app.route('/recipe/<int:id>')
-def recipe(id):
+def recipe_info(id):
     recipe = Recipe.query.get(id)
     if not recipe:
         abort(404)

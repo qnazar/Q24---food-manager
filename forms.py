@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, EmailField, PasswordField, SubmitField, SelectField, DateField, IntegerField, \
-    FloatField, BooleanField, TextAreaField
-from wtforms.validators import Email, DataRequired, Length, EqualTo, Regexp
+    FloatField, TextAreaField
+from wtforms.validators import DataRequired, Length, EqualTo
 
 
 class MyFloatField(FloatField):
@@ -18,9 +18,9 @@ class MyFloatField(FloatField):
 class RegisterForm(FlaskForm):
     email = EmailField('Електронна адреса', validators=[DataRequired()])  # TODO email validator
     password = PasswordField('Пароль', validators=[DataRequired(),
-                                                     Length(5, 20, message="Pw should be at list %(min)d symbols"),
-                                                     EqualTo('password_confirm', message="Passwords  need to match!")])
-    password_confirm = PasswordField('Підтвердежння пароля', validators=[DataRequired()])
+                                                   Length(5, 20, message="Pw should be at list %(min)d symbols"),
+                                                   EqualTo('password_confirm', message="Passwords  need to match!")])
+    password_confirm = PasswordField('Підтвердження пароля', validators=[DataRequired()])
     submit = SubmitField('Зареєструватися')
 
 

@@ -4,24 +4,24 @@
     <head>
         <meta charset="UTF-8">
         <link type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet"/>
-        {% if title %}
-            <title>{{ title }}</title>
-        {% else %}
-            <title>FOOD APP</title>
-        {% endif %}
+
+        <title>{{ title if title else 'Q24'}}</title>
 
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
               integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
         <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
-    {% block scrips %}
-    {% endblock %}
+
+        {% block scrips %}
+        {% endblock %}
 
     </head>
 
     <body>
+
         {% block navbar %}
-        {% include 'navbar.html' %}
+            {% include 'navbar.html' %}
         {% endblock %}
+
         {% include 'flash.html' %}
 
         <div class="container-fluid" id="main_back">
@@ -31,6 +31,8 @@
             {% endblock %}
 
         </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+
     </body>
 </html>

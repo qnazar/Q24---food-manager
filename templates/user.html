@@ -12,9 +12,9 @@
                                 <h4 class="card-text">{{ person.first_name if person.first_name }} {{ person.last_name if person.last_name }}</h4>
                             </div>
                             {% if current_user.profile_pic %}
-                        <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" class="card-img-top p-1 rounded">
+                        <img src="{{ url_for('static', filename='images/profiles/' + current_user.profile_pic) }}" class="card-img-top p-1 rounded" alt="...">
                     {% else %}
-                        <img src="../static/images/profiles/user-pic.png" class="card-img-top p-1 rounded">
+                        <img src="../static/images/profiles/user-pic.png" class="card-img-top p-1 rounded" alt="...">
                     {% endif %}
                             <div class="card-footer text-center">
                                 <a class="btn btn-primary btn-sm" href="{{ url_for('upload_picture') }}">Змінити фото</a>
@@ -78,46 +78,44 @@
                             <div class="card-header p-0">
                                 <h5 class="card-title">Фізичні дані</h5>
                             </div>
-
                                 <ul class="list-group">
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Вага
-                                    <span class="badge bg-primary rounded-pill">{{ person.weight if person.weight }} кг</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Зріст
-                                    <span class="badge bg-primary rounded-pill">{{ person.height if person.height }} см</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Активність
-                                    <span class="badge bg-primary rounded-pill">{{ person.activity if person.activity }}</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Статура
-                                    <span class="badge bg-primary rounded-pill">{{ person.constitution if person.constitution }}</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    IMT
-                                    <span class="badge bg-primary rounded-pill">{{ person.BMI if person.BMI }}</span>
-                                  </li>
-                                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Норма ккал
-                                    <span class="badge bg-primary rounded-pill">{{ person.DKI if person.DKI }} ккал</span>
-                                  </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Норма води
-                                    <span class="badge bg-primary rounded-pill">{{ person.DWN if person.DWN }} мл</span>
-                                  </li>
+                                        Вага
+                                        <span class="badge bg-primary rounded-pill">{{ person.weight if person.weight }} кг</span>
+                                    </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Межі ваги
-                                    <span class="badge bg-primary rounded-pill">{{ person.min_weight if person.IW }} - {{ person.max_weight if person.IW }} кг</span>
-                                  </li>
+                                        Зріст
+                                        <span class="badge bg-primary rounded-pill">{{ person.height if person.height }} см</span>
+                                    </li>
                                     <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    Ідеальна вага
-                                    <span class="badge bg-primary rounded-pill">{{ person.IW if person.IW }} кг</span>
-                                  </li>
+                                        Активність
+                                        <span class="badge bg-primary rounded-pill">{{ person.activity if person.activity }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Статура
+                                        <span class="badge bg-primary rounded-pill">{{ person.constitution if person.constitution }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        IMT
+                                        <span class="badge bg-primary rounded-pill">{{ person.BMI if person.BMI }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Норма ккал
+                                        <span class="badge bg-primary rounded-pill">{{ person.DKI if person.DKI }} ккал</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Норма води
+                                        <span class="badge bg-primary rounded-pill">{{ person.DWN if person.DWN }} мл</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Межі ваги
+                                        <span class="badge bg-primary rounded-pill">{{ person.min_weight if person.IW }} - {{ person.max_weight if person.IW }} кг</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Ідеальна вага
+                                        <span class="badge bg-primary rounded-pill">{{ person.IW if person.IW }} кг</span>
+                                    </li>
                                 </ul>
-
                         </div>
                     </div>
                     <div class="col-md-8">

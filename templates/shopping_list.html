@@ -43,20 +43,21 @@
             <h3 class="p-1">Список покупок</h3>
             <table class="table table-striped-columns table-hover">
                 <thead class="text-center">
-                    <th>Чек</th>
-                    <th>Назва</th>
-                    <th>Кількість</th>
-                    <th></th>
+                    <tr>
+                        <th>Чек</th>
+                        <th>Назва</th>
+                        <th>Кількість</th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
-
                     {% for shop_item in shop_list %}
                         <tr>
-                    <td><input type="checkbox"></td>
-                    <td>{{ shop_item.product.name }}</td>
-                    <td>{{ shop_item.quantity }} {{ shop_item.measure }}</td>
-                    <td><a href="{{ url_for('del_from_shop_list', id=shop_item.id) }}" class="btn btn-primary">Видалити</a></td>
-                    <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buy{{ shop_item.id }}">Купити</button></td>
+                            <td><input type="checkbox"></td>
+                            <td>{{ shop_item.product.name }}</td>
+                            <td>{{ shop_item.quantity }} {{ shop_item.measure }}</td>
+                            <td><a href="{{ url_for('remove_from_shopping_list', id=shop_item.id) }}" class="btn btn-primary">Видалити</a></td>
+                            <td><button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#buy{{ shop_item.id }}">Купити</button></td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -67,71 +68,70 @@
 
 {% for shop_item in shop_list %}
 <div class="modal fade" id="buy{{ shop_item.id }}" tabindex="-1" aria-labelledby="buy{{ shop_item.id }}ModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="buy{{ shop_item.id }}ModalLabel">Купити {{ shop_item.product.name }}</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-          <form method="post" id="modal_form">
-             {{ modal_form.csrf_token }}
-                <div class="row p-1">
-                    <div class="col">
-                        <div class="form-floating">
-                            {{ modal_form.name(class="form-control", placeholder='name', value=shop_item.product.name) }}
-                            {{ modal_form.name.label(class="form-label") }}
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="buy{{ shop_item.id }}ModalLabel">Купити {{ shop_item.product.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" id="modal_form">
+                     {{ modal_form.csrf_token }}
+                     <div class="row p-1">
+                         <div class="col">
+                               <div class="form-floating">
+                                   {{ modal_form.name(class="form-control", placeholder='name', value=shop_item.product.name) }}
+                                   {{ modal_form.name.label(class="form-label") }}
+                               </div>
+                         </div>
+                     </div>
+                    <div class="row p-1">
+                        <div class="col">
+                            <div class="form-floating">
+                                {{ modal_form.quantity(class="form-control", placeholder='quantity', value=shop_item.quantity) }}
+                                {{ modal_form.quantity.label(class="form-label") }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-floating">
+                                {{ modal_form.measure(class="form-control", placeholder='measure', value=shop_item.measure) }}
+                                {{ modal_form.measure.label(class="form-label") }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-floating">
+                                {{ modal_form.price(class="form-control", placeholder='price') }}
+                                {{ modal_form.price.label(class="form-label") }}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="row p-1">
-                    <div class="col">
-                        <div class="form-floating">
-                            {{ modal_form.quantity(class="form-control", placeholder='quantity', value=shop_item.quantity) }}
-                            {{ modal_form.quantity.label(class="form-label") }}
+                    <div class="row p-1">
+                        <div class="col">
+                            <div class="form-floating">
+                                {{ modal_form.produced_date(class="form-control", placeholder='produced_date') }}
+                                {{ modal_form.produced_date.label(class="form-label") }}
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="form-floating">
+                            {{ modal_form.expired_date(class="form-control", placeholder='expired_date') }}
+                            {{ modal_form.expired_date.label(class="form-label") }}
+                            </div>
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="form-floating">
-                            {{ modal_form.measure(class="form-control", placeholder='measure', value=shop_item.measure) }}
-                            {{ modal_form.measure.label(class="form-label") }}
+                    <div class="modal-footer">
+                        <div class="col">
+                        {{ modal_form.submit(class="btn btn-primary", value='Купити') }}
                         </div>
                     </div>
-                    <div class="col">
-                        <div class="form-floating">
-                            {{ modal_form.price(class="form-control", placeholder='price') }}
-                            {{ modal_form.price.label(class="form-label") }}
-                        </div>
-                    </div>
-                </div>
-                <div class="row p-1">
-                    <div class="col">
-                        <div class="form-floating">
-                            {{ modal_form.produced_date(class="form-control", placeholder='produced_date') }}
-                            {{ modal_form.produced_date.label(class="form-label") }}
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-floating">
-                        {{ modal_form.expired_date(class="form-control", placeholder='expired_date') }}
-                        {{ modal_form.expired_date.label(class="form-label") }}
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <div class="col">
-                    {{ modal_form.submit(class="btn btn-primary", value='Купити') }}
-                    </div>
-                </div>
-            </form>
-      </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 {% endfor %}
 
-
-    {# Скрипт для випадного пошуку #}
+{# Скрипт для випадного пошуку #}
 <script>
     $( function() {
     var availableProds = [
@@ -144,4 +144,5 @@
     });
     } );
 </script>
+
 {% endblock %}
