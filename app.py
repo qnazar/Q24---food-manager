@@ -479,53 +479,53 @@ def add_recipe():
                            all_products=all_products, all_recipes=all_recipes)
 
 
-products = {}
-results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+products: dict = {}
+results: dict = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 
 
 @app.route('/meal', methods=['GET', 'POST'])
 def meal():
     global products, results
-    all_products = Product.query.all()
+    all_products = Stock.query.filter_by(user_id=current_user.id).all()
     product_form = ProductsForMealForm()
     meal_form = AddMealForm()
     if product_form.validate_on_submit() and product_form.add.data:
-
         product = Product.query.filter_by(name=product_form.product.data).first()
-        products[product] = [product_form.quantity.data, product_form.measure.data]
+        s = Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first()
+        if product_form.quantity.data > s.quantity:
+            flash('нема стільки продукту')
+        else:
+            for key, value in results.items():
+                if key == 'weight':
+                    products[product] = {key: (product_form.quantity.data, product_form.measure.data)}
+                    weight = measure_converter(product_form.quantity.data, product_form.measure.data)
+                    results[key] += weight
+                    continue
+                results[key] += round(getattr(product, key) * weight / 100, 1)
+                products[product].update([(key, round(getattr(product, key) * weight / 100, 1))])
 
-        quant = 1 if product_form.measure.data in {'г', 'мл'} else 1000
-        if product_form.measure.data == 'шт':
-            quant = 60
-        results[0] += product_form.quantity.data * quant
-
-        kcal = round(product.kcal * product_form.quantity.data * quant // 100)
-        products[product].append(kcal)
-        results[1] += kcal
-        protein = round(product.proteins * product_form.quantity.data * quant / 100, 1)
-        products[product].append(protein)
-        results[2] += protein
-        fat = round(product.fats * product_form.quantity.data * quant / 100, 1)
-        products[product].append(fat)
-        results[3] += fat
-        carbs = round(product.carbs * product_form.quantity.data * quant / 100, 1)
-        products[product].append(carbs)
-        results[4] += carbs
-        fibers = round(product.fibers * product_form.quantity.data * quant / 100, 1)
-        products[product].append(fibers)
-        results[5] += fibers
+    if meal_form.validate_on_submit() and meal_form.clear.data:
+        products = {}
+        results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 
     if meal_form.validate_on_submit() and meal_form.submit.data:
-        new_meal = Meal(name=meal_form.name.data,
-                        type=meal_form.meal.data,
-                        weight=results[0], kcal=results[1], protein=results[2],
-                        fat=results[3], carbs=results[4], fibers=results[5],
-                        user_id=current_user.id)
+        new_meal = Meal(name=meal_form.name.data, type=meal_form.meal.data, user_id=current_user.id,
+                        weight=results['weight'], kcal=results['kcal'], protein=results['proteins'],
+                        fat=results['fats'], carbs=results['carbs'], fibers=results['fibers'])
+
+        for product, values in products.items():
+            s: Stock = Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first()
+            price_per_unit = s.price / s.quantity
+            s.quantity -= values['weight'][0]
+            s.status = 'у вжитку' if s.quantity > 0 else 'fully-used'
+            s.price = round(s.quantity * price_per_unit, 2)
+
         db.session.add(new_meal)
         db.session.commit()
         flash("Страву додано")
+
         products = {}
-        results = [0, 0, 0, 0, 0, 0]
+        results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
         return render_template('meal.html', products_form=product_form, results=results,
                                meal_form=meal_form, products=products, all_products=all_products)
     return render_template('meal.html', products_form=product_form, results=results,
@@ -561,7 +561,7 @@ def meal_nutrition_calculator():
             results[key] += round(getattr(product, key) * weight / 100, 1)
             products[product].update([(key, round(getattr(product, key) * weight / 100, 1))])
 
-    if meal_form.validate_on_submit() and meal_form.submit.data:
+    if meal_form.validate_on_submit() and meal_form.clear.data:
         products = {}
         results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 

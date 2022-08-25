@@ -10,77 +10,83 @@
 
 {% block content %}
 <div class="container py-3">
-    <div class="row row-cols-md-2">
-        <div class="col">
+    <div class="row">
+        <div class="col-4">
             <form method="post" class="form-floating">
                 {{ products_form.csrf_token }}
-                <div class="row">
+                <div class="row form-floating py-1">
                     {{ products_form.product(class='form-control') }}
                     {{ products_form.product.label(class='form-label') }}
                 </div>
-                <div class="row">
-                    {{ products_form.quantity(class='form-control') }}
-                    {{ products_form.quantity.label(class='form-label') }}
+                <div class="row form-floating py-1">
+                    <div class="col form-floating">
+                        {{ products_form.quantity(class='form-control') }}
+                        {{ products_form.quantity.label(class='form-label') }}
+                    </div>
+                    <div class="col form-floating">
+                        {{ products_form.measure(class='form-control') }}
+                        {{ products_form.measure.label(class='form-label') }}
+                    </div>
                 </div>
-                <div class="row">
-                    {{ products_form.measure(class='form-control') }}
-                    {{ products_form.measure.label(class='form-label') }}
-                </div>
-                <div class="row">
+
+                <div class="row form-floating py-1">
                     {{ products_form.add(class='btn btn-primary') }}
                 </div>
             </form>
         </div>
-        <div class="col">
+
+        <div class="col-1"></div>
+
+        <div class="col-7">
             <table class="table">
                 <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Kcal</th>
-                    <th>Prot</th>
-                    <th>Fat</th>
-                    <th>Carbs</th>
-                    <th>Fibers</th>
+                    <th>Продукт</th>
+                    <th>Кількість</th>
+                    <th>Ккал</th>
+                    <th>Білки</th>
+                    <th>Жири</th>
+                    <th>Вуглеводи</th>
+                    <th>Клітковина</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for product, quantity in products.items() %}
+                {% for product, values in products.items() %}
                 <tr>
                     <td>{{ product.name }}</td>
-                    <td>{{ quantity[0] }} {{ quantity[1] }}</td>
-                    <td>{{ quantity[2] }}</td>
-                    <td>{{ quantity[3] }}</td>
-                    <td>{{ quantity[4] }}</td>
-                    <td>{{ quantity[5] }}</td>
-                    <td>{{ quantity[6] }}</td>
+                    {% for value in values.values() %}
+                        {% if value is iterable %}
+                            <td>{{ value[0] }} {{ value[1] }}</td>
+
+                        {% else %}
+                    <td>{{ value }}</td>
+                        {% endif %}
+                    {% endfor %}
                 </tr>
                 {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr>
                         <td>Сума</td>
-                        <td>{{ results[0] }} г</td>
-                        <td>{{ results[1] }} ккал</td>
-                        <td>{{ results[2] }} г</td>
-                        <td>{{ results[3] }} г</td>
-                        <td>{{ results[4] }} г</td>
-                        <td>{{ results[5] }} г</td>
+                        {% for result in results.values() %}
+                        <td>{{ result|round(1) }}</td>
+                        {% endfor %}
                     </tr>
                 </tfoot>
             </table>
             <form method="post" class="form-floating">
                 {{ meal_form.csrf_token }}
-                <div class="row">
+                <div class="row form-floating py-1">
                     {{ meal_form.meal(class='form-control') }}
                     {{ meal_form.meal.label(class='form-label') }}
                 </div>
-                <div class="row">
+                <div class="row form-floating py-1">
                     {{ meal_form.name(class='form-control') }}
                     {{ meal_form.name.label(class='form-label') }}
                 </div>
-                <div class="row">
-                    {{ meal_form.submit(class='btn btn-primary') }}
+                <div class="row py-1">
+                    {{ meal_form.submit(class='btn btn-primary w-25 mx-1') }}
+                    {{ meal_form.clear(class='btn btn-primary w-25 mx-1') }}
                 </div>
             </form>
         </div>
@@ -93,7 +99,7 @@
     $( function() {
     var availableProds = [
         {% for product in all_products %}
-            "{{product}}",
+            "{{product.product}}",
         {% endfor %}
     ];
     $( "#product" ).autocomplete({

@@ -79,8 +79,11 @@
                     {{ meal_form.name(class='form-control') }}
                     {{ meal_form.name.label(class='form-label') }}
                 </div>
-                <div class="row">
+                <div class="row visually-hidden">
                     {{ meal_form.submit(class='btn btn-primary w-25', value='Очистити') }}
+                </div>
+                <div class="row">
+                    {{ meal_form.clear(class='btn btn-primary') }}
                 </div>
             </form>
         </div>

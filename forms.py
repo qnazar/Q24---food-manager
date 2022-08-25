@@ -120,3 +120,4 @@ class AddMealForm(FlaskForm):
                                           ('Вечеря', 'Вечеря'), ('Перекус', 'Перекус')])
     name = StringField('Назва страви', default='Без назви')
     submit = SubmitField('Додати')
+    clear = SubmitField('Очистити')
