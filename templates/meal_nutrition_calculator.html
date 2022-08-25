@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block scrips %}
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.js"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/ui-lightness/jquery-ui.css" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+    <div class="row">
+
+        <div class="col-4">
+            <h3 class="text-center">Додати продукт</h3>
+            <form method="post" class="form-floating">
+                {{ product_form.csrf_token }}
+                <div class="row form-floating py-1">
+                    {{ product_form.product(class='form-control') }}
+                    {{ product_form.product.label(class='form-label') }}
+                </div>
+                <div class="row form-floating py-1">
+                    {{ product_form.quantity(class='form-control') }}
+                    {{ product_form.quantity.label(class='form-label') }}
+                </div>
+                <div class="row form-floating py-1">
+                    {{ product_form.measure(class='form-control') }}
+                    {{ product_form.measure.label(class='form-label') }}
+                </div>
+                <div class="row py-1">
+                    {{ product_form.add(class='btn btn-primary w-25') }}
+                </div>
+            </form>
+        </div>
+
+        <div class="col-1"></div>
+
+        <div class="col-7">
+            <h3 class="text-center">Результати</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Продукт</th>
+                    <th>Кількість</th>
+                    <th>Ккал</th>
+                    <th>Білки</th>
+                    <th>Жири</th>
+                    <th>Вуглеводи</th>
+                    <th>Клітковина</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product, values in products.items() %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    {% for value in values.values() %}
+                    <td>{{ value }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td>Сума</td>
+                        {% for result in results.values() %}
+                        <td>{{ result|round(1) }}</td>
+                        {% endfor %}
+                    </tr>
+                </tfoot>
+            </table>
+            <form method="post" class="form-floating">
+                {{ meal_form.csrf_token }}
+                <div class="row visually-hidden">
+                    {{ meal_form.meal(class='form-control') }}
+                    {{ meal_form.meal.label(class='form-label') }}
+                </div>
+                <div class="row visually-hidden">
+                    {{ meal_form.name(class='form-control') }}
+                    {{ meal_form.name.label(class='form-label') }}
+                </div>
+                <div class="row">
+                    {{ meal_form.submit(class='btn btn-primary w-25', value='Очистити') }}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{# Скрипт для випадного пошуку #}
+<script>
+    $( function() {
+    var availableProds = [
+        {% for product in all_products %}
+            "{{product}}",
+        {% endfor %}
+    ];
+    $( "#product" ).autocomplete({
+      source: availableProds
+    });
+    } );
+</script>
+{% endblock %}

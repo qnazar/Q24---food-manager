@@ -107,7 +107,7 @@ class IngredientForm(FlaskForm):
     add = SubmitField("Додати")
 
 
-class MealForm(FlaskForm):
+class ProductsForMealForm(FlaskForm):
 
     product = StringField('Продукт')
     quantity = MyFloatField('Кількість')

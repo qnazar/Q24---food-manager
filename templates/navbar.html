@@ -23,6 +23,18 @@
             <a class="nav-link" href="{{ url_for('stock') }}">Мої продукти</a>
         </li>
 
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('recipes') }}">Рецепти</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('meal_nutrition_calculator') }}">Калорійність страви</a>
+        </li>
+
+        <li class="nav-item">
+            <span class="nav-link"> | </span>
+        </li>
+
         {% if not current_user.is_authenticated %}
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for('registration') }}">Реєстрація</a>
@@ -40,17 +52,16 @@
         {% endif %}
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('add_product') }}">Додати продукт</a>
+            <span class="nav-link"> | </span>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" href="{{ url_for('recipes') }}">Рецепти</a>
+            <a class="nav-link" href="{{ url_for('add_product') }}">Додати продукт</a>
         </li>
 
         <li class="nav-item">
             <a class="nav-link" href="{{ url_for('add_recipe') }}">Додати рецепт</a>
         </li>
-
     </ul>
 
     </div>

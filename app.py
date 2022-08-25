@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Flask, render_template, url_for, flash, redirect, request, abort
+from flask import Flask, render_template, url_for, flash, redirect, request, abort, session
 from flask_migrate import Migrate
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
@@ -13,7 +13,8 @@ import os
 
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient, Meal
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
-    ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, MealForm, AddMealForm
+    ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, ProductsForMealForm, AddMealForm
+
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
@@ -478,34 +479,39 @@ def add_recipe():
                            all_products=all_products, all_recipes=all_recipes)
 
 
+products = {}
+results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+
+
 @app.route('/meal', methods=['GET', 'POST'])
-def meal(products={}, results=[0, 0, 0, 0, 0, 0]):
+def meal():
+    global products, results
     all_products = Product.query.all()
-    products_form = MealForm()
+    product_form = ProductsForMealForm()
     meal_form = AddMealForm()
-    if products_form.validate_on_submit() and products_form.add.data:
+    if product_form.validate_on_submit() and product_form.add.data:
 
-        product = Product.query.filter_by(name=products_form.product.data).first()
-        products[product] = [products_form.quantity.data, products_form.measure.data]
+        product = Product.query.filter_by(name=product_form.product.data).first()
+        products[product] = [product_form.quantity.data, product_form.measure.data]
 
-        quant = 1 if products_form.measure.data in {'г', 'мл'} else 1000
-        if products_form.measure.data == 'шт':
+        quant = 1 if product_form.measure.data in {'г', 'мл'} else 1000
+        if product_form.measure.data == 'шт':
             quant = 60
-        results[0] += products_form.quantity.data * quant
+        results[0] += product_form.quantity.data * quant
 
-        kcal = round(product.kcal * products_form.quantity.data * quant // 100)
+        kcal = round(product.kcal * product_form.quantity.data * quant // 100)
         products[product].append(kcal)
         results[1] += kcal
-        protein = round(product.proteins * products_form.quantity.data * quant / 100, 1)
+        protein = round(product.proteins * product_form.quantity.data * quant / 100, 1)
         products[product].append(protein)
         results[2] += protein
-        fat = round(product.fats * products_form.quantity.data * quant / 100, 1)
+        fat = round(product.fats * product_form.quantity.data * quant / 100, 1)
         products[product].append(fat)
         results[3] += fat
-        carbs = round(product.carbs * products_form.quantity.data * quant / 100, 1)
+        carbs = round(product.carbs * product_form.quantity.data * quant / 100, 1)
         products[product].append(carbs)
         results[4] += carbs
-        fibers = round(product.fibers * products_form.quantity.data * quant / 100, 1)
+        fibers = round(product.fibers * product_form.quantity.data * quant / 100, 1)
         products[product].append(fibers)
         results[5] += fibers
 
@@ -520,10 +526,47 @@ def meal(products={}, results=[0, 0, 0, 0, 0, 0]):
         flash("Страву додано")
         products = {}
         results = [0, 0, 0, 0, 0, 0]
-        return render_template('meal.html', products_form=products_form, results=results,
+        return render_template('meal.html', products_form=product_form, results=results,
                                meal_form=meal_form, products=products, all_products=all_products)
-    return render_template('meal.html', products_form=products_form, results=results,
+    return render_template('meal.html', products_form=product_form, results=results,
                            meal_form=meal_form, products=products, all_products=all_products)
+
+
+def measure_converter(quantity, unit):
+    """Helper for converting measure to GRAMS"""
+    if unit in {'г', 'мл'}:
+        return quantity
+    elif unit in {'кг', 'л'}:
+        return quantity * 1000
+    elif unit == 'шт':  # Конвертація відбувається на основі середньої ваги яєць. Потрібна таблиця конвертації в базі
+        return quantity * 60
+
+
+@app.route('/meal_nutrition_calculator', methods=['GET', 'POST'])
+def meal_nutrition_calculator():
+    """Калькулятор калорійності страв. Доступний без логіну, нічого не зберігає"""
+    global products, results
+    all_products = Product.query.all()
+    product_form = ProductsForMealForm()
+    meal_form = AddMealForm()
+
+    if product_form.validate_on_submit() and product_form.add.data:
+        product = Product.query.filter_by(name=product_form.product.data).first()
+        for key, value in results.items():
+            if key == 'weight':
+                products[product] = {key: f'{product_form.quantity.data} {product_form.measure.data}'}
+                weight = measure_converter(product_form.quantity.data, product_form.measure.data)
+                results[key] += weight
+                continue
+            results[key] += round(getattr(product, key) * weight / 100, 1)
+            products[product].update([(key, round(getattr(product, key) * weight / 100, 1))])
+
+    if meal_form.validate_on_submit() and meal_form.submit.data:
+        products = {}
+        results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+
+    return render_template('meal_nutrition_calculator.html', title='Калорійність', all_products=all_products,
+                           products=products, product_form=product_form, meal_form=meal_form, results=results)
 
 
 @app.errorhandler(404)
