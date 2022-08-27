@@ -53,24 +53,25 @@
                 <tbody>
                 {% for product, values in products.items() %}
                 <tr>
-                    <td>{{ product.name }}</td>
-                    {% for value in values.values() %}
-                        {% if value is iterable %}
-                            <td>{{ value[0] }} {{ value[1] }}</td>
-
-                        {% else %}
-                    <td>{{ value }}</td>
-                        {% endif %}
-                    {% endfor %}
+                    <td>{{ product }}</td>
+                    <td>{{ values['weight'][0] }} {{ values['weight'][1] }}</td>
+                    <td>{{ values['kcal'] }}</td>
+                    <td>{{ values['proteins'] }}</td>
+                    <td>{{ values['fats'] }}</td>
+                    <td>{{ values['carbs'] }}</td>
+                    <td>{{ values['fibers'] }}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr>
                         <td>Сума</td>
-                        {% for result in results.values() %}
-                        <td>{{ result|round(1) }}</td>
-                        {% endfor %}
+                        <td>{{ results['weight']|round(1) }}</td>
+                        <td>{{ results['kcal']|round(1) }}</td>
+                        <td>{{ results['proteins']|round(1) }}</td>
+                        <td>{{ results['fats']|round(1) }}</td>
+                        <td>{{ results['carbs']|round(1) }}</td>
+                        <td>{{ results['fibers']|round(1) }}</td>
                     </tr>
                 </tfoot>
             </table>

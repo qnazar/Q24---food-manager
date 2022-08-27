@@ -39,6 +39,11 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 
+@app.before_first_request
+def before_first_request():
+    session.permanent = True
+
+
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -46,6 +51,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
+    print(session)
     return render_template('home.html', title='Home')
 
 
@@ -479,43 +485,50 @@ def add_recipe():
                            all_products=all_products, all_recipes=all_recipes)
 
 
-products: dict = {}
-results: dict = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+# products: dict = {}
+# results: dict = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 
 
 @app.route('/meal', methods=['GET', 'POST'])
 def meal():
-    global products, results
     all_products = Stock.query.filter_by(user_id=current_user.id).all()
     product_form = ProductsForMealForm()
     meal_form = AddMealForm()
+
+    if 'products' not in session or 'results' not in session:
+        session['products'] = {}
+        session['results'] = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+
     if product_form.validate_on_submit() and product_form.add.data:
+
         product = Product.query.filter_by(name=product_form.product.data).first()
         s = Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first()
         if product_form.quantity.data > s.quantity:
             flash('нема стільки продукту')
         else:
-            for key, value in results.items():
+            session['products'][str(product)] = {'weight': (product_form.quantity.data, product_form.measure.data)}
+            weight = round(measure_converter(product_form.quantity.data, product_form.measure.data), 2)
+            session['results']['weight'] += weight
+            for key, value in session['results'].items():
                 if key == 'weight':
-                    products[product] = {key: (product_form.quantity.data, product_form.measure.data)}
-                    weight = measure_converter(product_form.quantity.data, product_form.measure.data)
-                    results[key] += weight
                     continue
-                results[key] += round(getattr(product, key) * weight / 100, 1)
-                products[product].update([(key, round(getattr(product, key) * weight / 100, 1))])
+                session['results'][key] += round((getattr(product, key) * weight) / 100, 1)
+                session['products'][str(product)].update([(key, round(getattr(product, key) * weight / 100, 1))])
 
     if meal_form.validate_on_submit() and meal_form.clear.data:
-        products = {}
-        results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+        session['products'] = {}
+        session['results'] = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 
     if meal_form.validate_on_submit() and meal_form.submit.data:
         new_meal = Meal(name=meal_form.name.data, type=meal_form.meal.data, user_id=current_user.id,
-                        weight=results['weight'], kcal=results['kcal'], protein=results['proteins'],
-                        fat=results['fats'], carbs=results['carbs'], fibers=results['fibers'])
+                        weight=round(session['results']['weight'], 2), kcal=session['results']['kcal'],
+                        protein=round(session['results']['proteins'], 1), fat=round(session['results']['fats'], 1),
+                        carbs=round(session['results']['carbs'], 1), fibers=round(session['results']['fibers'], 1))
 
-        for product, values in products.items():
+        for product_name, values in session['products'].items():
+            product = Product.query.filter_by(name=product_name).first()
             s: Stock = Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first()
-            price_per_unit = s.price / s.quantity
+            price_per_unit = round(s.price / s.quantity, 2)
             s.quantity -= values['weight'][0]
             s.status = 'у вжитку' if s.quantity > 0 else 'fully-used'
             s.price = round(s.quantity * price_per_unit, 2)
@@ -524,12 +537,11 @@ def meal():
         db.session.commit()
         flash("Страву додано")
 
-        products = {}
-        results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
-        return render_template('meal.html', products_form=product_form, results=results,
-                               meal_form=meal_form, products=products, all_products=all_products)
-    return render_template('meal.html', products_form=product_form, results=results,
-                           meal_form=meal_form, products=products, all_products=all_products)
+        session['products'] = {}
+        session['results'] = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+
+    return render_template('meal.html', products_form=product_form, results=session['results'],
+                           meal_form=meal_form, products=session['products'], all_products=all_products)
 
 
 def measure_converter(quantity, unit):
