@@ -338,7 +338,7 @@ def shopping_list():
         shop_list = ShoppingList.query.filter_by(user_id=current_user.id).all()
         return render_template('shopping_list.html', form=form, all_products=all_products,
                                shop_list=shop_list, modal_form=modal_form)
-    if modal_form.validate_on_submit() and modal_form.submit.data:
+    if modal_form.validate_on_submit() and modal_form.add.data:
         product_id = Product.query.filter_by(name=modal_form.name.data).first().id
         entry = Stock(user_id=current_user.id, product_id=product_id,
                       quantity=modal_form.quantity.data, measure=modal_form.measure.data,
