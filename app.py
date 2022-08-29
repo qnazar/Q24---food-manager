@@ -224,7 +224,6 @@ def calculations(mode):
         BMI = current_user.profile.body_mass_index()
         current_user.profile.BMI = BMI
         flash(f'Твій індекс маси тіла - {BMI}!')
-        return render_template('calculations.html')
     elif mode == 'DKI':
         DKI = current_user.profile.daily_kcal_intake()
         current_user.profile.DKI = DKI
