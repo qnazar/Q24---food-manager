@@ -179,8 +179,8 @@ def upload_picture():
     form = ProfilePicForm()
     if form.validate_on_submit():
         if form.profile_pic.data:
-            if current_user.profile_pic:
-                os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
+            # if current_user.profile_pic:
+            #     os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
 
             picture = request.files['profile_pic']
             pic_filename = secure_filename(picture.filename)
