@@ -197,15 +197,18 @@ def upload_picture():
 @app.route('/delete_picture')
 @login_required
 def delete_picture():
-    if current_user.profile_pic is None:
-        pass
-    else:
-        print("work")
-        os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
-        current_user.profile_pic = None
-        db.session.commit()
-        flash(message='Фото успішно видалено', category='success')
-    return redirect(url_for('user', id=current_user.id))
+    try:
+        if current_user.profile_pic is None:
+            pass
+        else:
+            os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
+            current_user.profile_pic = None
+            db.session.commit()
+            flash(message='Фото успішно видалено', category='success')
+    except:
+        flash('Проблема з фото')
+    finally:
+        return redirect(url_for('user', id=current_user.id))
 
 
 @app.route('/calculations/<mode>', methods=['GET', 'POST'])
