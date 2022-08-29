@@ -14,6 +14,7 @@ import os
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient, Meal
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
     ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, ProductsForMealForm, AddMealForm
+from helpers import stock_statistics, sort_the_stock, select_query, measure_converter, use_from_stock
 
 
 app = Flask(__name__)
@@ -121,25 +122,6 @@ def logout():
     logout_user()
     flash('До зустрічі!', category='success')
     return redirect(url_for('login'))
-
-
-def stock_statistics(stocks: list) -> dict:
-    result: dict = {'count': 0, 'weight': 0, 'price': 0, 'kcal': 0,
-                    'protein': 0, 'fat': 0, 'carb': 0, 'fiber': 0}
-    for item in stocks:
-        measure = 1 if item.measure in {'г', 'мл'} else 1000
-        if item.measure == 'шт':  # для прикладу. Тільки для яєць
-            measure = 60  # Середня вага одного яйця - 60 г
-        product = item.product
-        result['count'] += 1
-        result['weight'] += round(item.quantity * measure, 1)
-        result['price'] += round(item.price, 2)
-        result['kcal'] += round(product.kcal * item.quantity * measure // 100)
-        result['protein'] += round(product.proteins * item.quantity * measure // 100, 1)
-        result['fat'] += round(product.fats * item.quantity * measure // 100, 1)
-        result['carb'] += round(product.carbs * item.quantity * measure // 100, 1)
-        result['fiber'] += round(product.fibers * item.quantity * measure // 100, 1)
-    return result
 
 
 @app.route('/user/<int:id>', methods=['GET', 'POST'])
@@ -260,27 +242,11 @@ def calculations(mode):
     return redirect(url_for('calculations', mode='about'))
 
 
-def sort_the_stock():
-    users_stock = Stock.query.filter_by(user_id=current_user.id).order_by(Stock.expired_date).all()
-    if not users_stock:
-        return []
-    output = []
-    for item in users_stock:
-        date = item.expired_date - datetime.date.today()
-        if date.days < 0:
-            item.status = ':('
-            db.session.commit()
-            output.append(('', [item]))
-        else:
-            output.append((f'{date.days} дн', [item]))
-    return output
-
-
 @app.route('/stock', methods=['GET', 'POST'])
 @login_required
 def stock():
     all_products = Product.query.all()  # всі продукти з бази - для пошуку
-    products = sort_the_stock()  # відсортовані продукти юзера
+    products = sort_the_stock(current_user)  # відсортовані продукти юзера
     trash = Trash.query.filter_by(user_id=current_user.id).all()  # викинуті юзером продукти
     trash_sum = sum([p.price for p in trash]) if trash else 0
 
@@ -301,33 +267,13 @@ def stock():
         except Exception as e:
             flash('Наразі можна додати тільки продукти, які є в нашій базі.')
             print(e)
-        return render_template('stock.html', form=form, products=products, title='Мої продукти',
-                               all_products=all_products, trash=trash_sum, use_product_form=use_product_form)
     if use_product_form.validate_on_submit():
         used: Stock = Stock.query.get(use_product_form.stock.data)
         quantity = use_product_form.quantity.data
-        if quantity <= used.quantity:
-            price_per_unit = used.price / used.quantity
-            used.quantity -= quantity
-            used.status = 'у вжитку' if used.quantity > 0 else 'fully-used'
-            used.price = round(used.quantity * price_per_unit, 2)
-            db.session.commit()
-            flash('Продукт використано')
-        else:
-            flash('Нема стільки продукту')
-        return render_template('stock.html', form=form, products=products, title='Мої продукти',
-                               all_products=all_products, trash=trash_sum, use_product_form=use_product_form)
+        success = use_from_stock(used, quantity)
+        flash('Продукт використано') if success else flash('Нема стільки продукту')
     return render_template('stock.html', form=form, products=products, title='Мої продукти',
                            all_products=all_products, trash=trash_sum, use_product_form=use_product_form)
-
-
-def select_query():
-    """Helper function to generate SelectField choices"""
-    choices = []
-    query = ProductsCategory.query.all()
-    for q in query:
-        choices.append((q.id, q.name))
-    return choices
 
 
 @app.route('/add_product', methods=['GET', 'POST'])
@@ -485,11 +431,8 @@ def add_recipe():
                            all_products=all_products, all_recipes=all_recipes)
 
 
-# products: dict = {}
-# results: dict = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
-
-
 @app.route('/meal', methods=['GET', 'POST'])
+@login_required
 def meal():
     all_products = Stock.query.filter_by(user_id=current_user.id).all()
     product_form = ProductsForMealForm()
@@ -544,14 +487,8 @@ def meal():
                            meal_form=meal_form, products=session['products'], all_products=all_products)
 
 
-def measure_converter(quantity, unit):
-    """Helper for converting measure to GRAMS"""
-    if unit in {'г', 'мл'}:
-        return quantity
-    elif unit in {'кг', 'л'}:
-        return quantity * 1000
-    elif unit == 'шт':  # Конвертація відбувається на основі середньої ваги яєць. Потрібна таблиця конвертації в базі
-        return quantity * 60
+products: dict = {}
+results: dict = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 
 
 @app.route('/meal_nutrition_calculator', methods=['GET', 'POST'])
