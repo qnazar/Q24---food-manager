@@ -222,7 +222,7 @@ def calculations(mode):
         flash(f'Твій основний обмін - {BMR} ккал!')
     elif mode == 'BMI':
         BMI = current_user.profile.body_mass_index()
-        current_user.profile.BMR = BMI
+        current_user.profile.BMI = BMI
         flash(f'Твій індекс маси тіла - {BMI}!')
         return render_template('calculations.html')
     elif mode == 'DKI':
