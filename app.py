@@ -253,7 +253,7 @@ def stock():
     form = StockForm()
     use_product_form = UseProductForm()
 
-    if form.validate_on_submit():
+    if form.validate_on_submit() and form.add.data:
         try:
             product_id = Product.query.filter_by(name=form.name.data).first().id
             entry = Stock(user_id=current_user.id, product_id=product_id,
@@ -267,7 +267,7 @@ def stock():
         except Exception as e:
             flash('Наразі можна додати тільки продукти, які є в нашій базі.')
             print(e)
-    if use_product_form.validate_on_submit():
+    if use_product_form.validate_on_submit() and use_product_form.submit.data:
         used: Stock = Stock.query.get(use_product_form.stock.data)
         quantity = use_product_form.quantity.data
         success = use_from_stock(used, quantity)

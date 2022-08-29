@@ -56,7 +56,7 @@ class StockForm(FlaskForm):
     produced_date = DateField("Дата виготовлення")
     expired_date = DateField("Вжити до")
     price = MyFloatField("Ціна")
-    submit = SubmitField('Додати')
+    add = SubmitField('Додати')
 
 
 class ProductForm(FlaskForm):
