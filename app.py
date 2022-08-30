@@ -54,6 +54,7 @@ def load_user(user_id):
 @app.route('/')
 def index():
     print(os.getenv("SECRET_KEY"))
+    print(os.environ.get('MAIL_USERNAME'))
     return render_template('home.html', title='Home')
 
 
@@ -75,7 +76,7 @@ def registration():
 
             # sending email confirmation
             token = s.dumps(user.email, salt='email-confirm')
-            msg = Message('Confirm email', sender=os.environ.get('MAIL_USERNAME'), recipients=[user.email])
+            msg = Message('Confirm email', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
             link = url_for('confirm_email', token=token, _external=True)
             msg.body = f'Your link is {link}'
             mail.send(msg)
