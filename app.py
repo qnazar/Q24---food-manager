@@ -69,7 +69,7 @@ def registration():
             db.session.add(user)
             db.session.commit()
             login_user(user)  # autologin after registration
-            flash('Реєстраці пройшла успішно. Лист з підтвердженням відправлено на вашу електронну адресу',
+            flash('Реєстрація пройшла успішно. Лист з підтвердженням відправлено на вашу електронну адресу',
                   category='success')
 
             # sending email confirmation
@@ -81,7 +81,7 @@ def registration():
 
             return redirect(location=url_for('user', id=user.id))
         else:
-            flash('This email is already used', category='warning')
+            flash('Користувач з такою поштою вже існує', category='warning')
     return render_template('registration.html', title='Registration', form=form)
 
 
@@ -89,7 +89,7 @@ def registration():
 def confirm_email(token):
     try:
         email = s.loads(token, salt='email-confirm', max_age=900)
-        flash('Email confirmed!!!', category='success')
+        flash('Електронну пошту підтверджено!', category='success')
         current_user.email_confirmed = True
         db.session.commit()
     except SignatureExpired:
@@ -138,9 +138,11 @@ def user(id):
     stats = stock_statistics(stocks)
     trashes = Trash.query.filter_by(user_id=current_user.id).all()
     trash = stock_statistics(trashes)
-    shop_list = ShoppingList.query.filter_by(user_id=current_user.id).limit(5)
+    shop_list = ShoppingList.query.filter_by(user_id=current_user.id).limit(3)
+    meals = Meal.query.filter_by(user_id=current_user.id).order_by(Meal.time.desc()).limit(5).all()
+    print(meals)
     return render_template('user.html', title='Profile', user=current_user, person=profile, stats=stats, trash=trash,
-                           shop_list=shop_list)
+                           shop_list=shop_list, meals=meals)
 
 
 @app.route('/user/<int:id>/update', methods=['GET', 'POST'])
@@ -179,9 +181,11 @@ def upload_picture():
     form = ProfilePicForm()
     if form.validate_on_submit():
         if form.profile_pic.data:
-            # if current_user.profile_pic:
-            #     os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
-
+            if current_user.profile_pic:
+                try:
+                    os.remove(os.path.join(f'static/images/profiles/{current_user.profile_pic}'))
+                except FileNotFoundError:
+                    pass
             picture = request.files['profile_pic']
             pic_filename = secure_filename(picture.filename)
             pic_name = str(uuid.uuid1()) + '_' + pic_filename
@@ -205,7 +209,7 @@ def delete_picture():
             current_user.profile_pic = None
             db.session.commit()
             flash(message='Фото успішно видалено', category='success')
-    except:
+    except FileNotFoundError:
         flash('Проблема з фото')
     finally:
         return redirect(url_for('user', id=current_user.id))
@@ -216,6 +220,9 @@ def delete_picture():
 def calculations(mode):
     if mode == 'about':
         return render_template('calculations.html')
+    elif not current_user.profile.weight or not current_user.profile.height:
+        flash('Потрібно вказати дані зросту та ваги!')
+        return redirect(url_for('update_personal_info', id=current_user.id))
     elif mode == 'BMR':
         BMR = current_user.profile.basic_metabolism_rate()
         current_user.profile.BMR = BMR
@@ -328,7 +335,7 @@ def shopping_list():
     shop_list = ShoppingList.query.filter_by(user_id=current_user.id).all()
     form = ShoppingForm()
     modal_form = StockForm()
-    if form.validate_on_submit() and form.add.data:
+    if form.validate_on_submit() and form.submit.data:
         product_id = Product.query.filter_by(name=form.name.data).first().id
         shop_item = ShoppingList(product_id=product_id, user_id=current_user.id,
                                  quantity=form.quantity.data, measure=form.measure.data)
@@ -447,24 +454,31 @@ def meal():
     if product_form.validate_on_submit() and product_form.add.data:
 
         product = Product.query.filter_by(name=product_form.product.data).first()
-        s = Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first()
-        if product_form.quantity.data > s.quantity:
-            flash('нема стільки продукту')
-        else:
-            session['products'][str(product)] = {'weight': (product_form.quantity.data, product_form.measure.data)}
-            weight = round(measure_converter(product_form.quantity.data, product_form.measure.data), 2)
-            session['results']['weight'] += weight
-            for key, value in session['results'].items():
-                if key == 'weight':
-                    continue
-                session['results'][key] += round((getattr(product, key) * weight) / 100, 1)
-                session['products'][str(product)].update([(key, round(getattr(product, key) * weight / 100, 1))])
+        if not product:
+            flash('Невідомий продукт')
+        elif s := Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first():
+            if s.measure != product_form.measure.data:
+                flash(f'Продукт має бути вказаний в "{s.measure}"')
+            elif product_form.quantity.data > s.quantity:
+                flash('Нема стільки продукту')
+            else:
+                session['products'][str(product)] = {'weight': (product_form.quantity.data, product_form.measure.data)}
+                weight = round(measure_converter(product_form.quantity.data, product_form.measure.data), 2)
+                session['results']['weight'] += weight
+                for key, value in session['results'].items():
+                    if key == 'weight':
+                        continue
+                    session['results'][key] += round((getattr(product, key) * weight) / 100, 1)
+                    session['products'][str(product)].update([(key, round(getattr(product, key) * weight / 100, 1))])
 
     if meal_form.validate_on_submit() and meal_form.clear.data:
         session['products'] = {}
         session['results'] = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 
     if meal_form.validate_on_submit() and meal_form.submit.data:
+        if session['products'] == {}:
+            flash('Потрібно додати продукти в страву')
+            return redirect(url_for('meal'))
         new_meal = Meal(name=meal_form.name.data, type=meal_form.meal.data, user_id=current_user.id,
                         weight=round(session['results']['weight'], 2), kcal=session['results']['kcal'],
                         protein=round(session['results']['proteins'], 1), fat=round(session['results']['fats'], 1),
@@ -474,7 +488,8 @@ def meal():
             product = Product.query.filter_by(name=product_name).first()
             s: Stock = Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first()
             price_per_unit = round(s.price / s.quantity, 2)
-            s.quantity -= values['weight'][0]
+            s.quantity -= float(values['weight'][0])
+            s.quantity = round(s.quantity, 2)
             s.status = 'у вжитку' if s.quantity > 0 else 'fully-used'
             s.price = round(s.quantity * price_per_unit, 2)
 
@@ -531,4 +546,4 @@ def forbidden(e):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

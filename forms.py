@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField
 from wtforms import StringField, EmailField, PasswordField, SubmitField, SelectField, DateField, IntegerField, \
-    FloatField, TextAreaField
-from wtforms.validators import DataRequired, Length, EqualTo
+    FloatField, TextAreaField, DecimalField
+from wtforms.validators import DataRequired, Length, EqualTo, NumberRange
 
 
 class MyFloatField(FloatField):
@@ -35,12 +35,12 @@ class ProfileForm(FlaskForm):
     last_name = StringField("Прізвище", validators=[Length(max=128)])
     sex = SelectField("Стать", choices=[('Чоловіча', 'Чоловіча'), ('Жіноча', 'Жіноча')])
     birthday = DateField("Дата народження", validators=[DataRequired()])
-    weight = MyFloatField("Вага", validators=[DataRequired()])
-    height = IntegerField("Зріст", validators=[DataRequired()])
+    weight = DecimalField("Вага", validators=[DataRequired(), NumberRange(min=30, max=200)])
+    height = IntegerField("Зріст", validators=[DataRequired(), NumberRange(min=100, max=220)])
     constitution = SelectField('Тип статури', choices=[('Нормостенік', 'Нормостенік'),
                                                        ('Астенік', 'Астенік'),
                                                        ('Гіперстенік', 'Гіперстенік')])
-    activity = MyFloatField("Коефіцієнт активності", default=1.2, validators=[DataRequired()])
+    activity = DecimalField("Коефіцієнт активності", default=1.2, validators=[DataRequired(), NumberRange(min=1, max=2)])
     submit = SubmitField('Підтвердити')
 
 
@@ -50,12 +50,12 @@ class ProfilePicForm(FlaskForm):
 
 
 class StockForm(FlaskForm):
-    name = StringField("Назва")
-    quantity = MyFloatField("Кількість")
+    name = StringField("Назва", validators=[DataRequired()])
+    quantity = DecimalField("Кількість", validators=[DataRequired()])
     measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
-    produced_date = DateField("Дата виготовлення")
-    expired_date = DateField("Вжити до")
-    price = MyFloatField("Ціна")
+    produced_date = DateField("Дата виготовлення", validators=[DataRequired()])
+    expired_date = DateField("Вжити до", validators=[DataRequired()])
+    price = DecimalField("Ціна", validators=[DataRequired()])
     add = SubmitField('Додати')
 
 
@@ -71,8 +71,8 @@ class ProductForm(FlaskForm):
 
 
 class UseProductForm(FlaskForm):
-    stock = StringField('Продукт')
-    quantity = MyFloatField('Кількість')
+    stock = StringField('Продукт', validators=[DataRequired()])
+    quantity = DecimalField('Кількість', validators=[DataRequired(), NumberRange(min=0.01)])
     submit = SubmitField('Використати')
 
 
@@ -80,7 +80,7 @@ class ShoppingForm(FlaskForm):
     name = StringField("Назва")
     quantity = MyFloatField("Кількість")
     measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
-    add = SubmitField('Додати')
+    submit = SubmitField('Додати')
 
 
 class TrashFilterForm(FlaskForm):
@@ -109,8 +109,8 @@ class IngredientForm(FlaskForm):
 
 class ProductsForMealForm(FlaskForm):
 
-    product = StringField('Продукт')
-    quantity = MyFloatField('Кількість')
+    product = StringField('Продукт', validators=[DataRequired()])
+    quantity = MyFloatField('Кількість', validators=[DataRequired()])
     measure = SelectField("Міра", choices=[('г', 'г'), ('кг', 'кг'), ('шт', 'шт'), ('мл', 'мл'), ('л', 'л')])
     add = SubmitField('Додати')
 

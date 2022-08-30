@@ -38,6 +38,11 @@
                         {{ form.weight(class="form-control", value=person.weight if person.weight) }}
                         {{ form.weight.label(class="form-label") }}
                         <span class="input-group-text">кг</span>
+{#                        {% for error in form.weight.errors %}#}
+{#                            <div class="alert alert-danger">#}
+{#                            {{ error }}#}
+{#                            </div>#}
+{#                        {% endfor %}#}
                     </div>
                 </div>
                 <div class="col-3">
@@ -45,6 +50,11 @@
                          {{ form.height(class="form-control", value=person.height if person.height) }}
                          {{ form.height.label(class="form-label") }}
                          <span class="input-group-text">см</span>
+{#                         {% for error in form.height.errors %}#}
+{#                            <div class="alert alert-danger">#}
+{#                            {{ error }}#}
+{#                            </div>#}
+{#                        {% endfor %}#}
                     </div>
                 </div>
                 <div class="col-3">
@@ -67,6 +77,11 @@
                                 ?
                              </button>
                          </span>
+                         {% for error in form.activity.errors %}
+                            <div class="alert alert-danger">
+                            {{ error }}
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -74,6 +89,15 @@
                 <div class="col-3">
                     {{ form.submit(class="btn btn-primary") }}
                     <a href="{{ url_for('user', id=current_user.id) }}" class="btn btn-primary">Скасувати</a>
+                </div>
+{#                <div class="col-9">#}
+{#                    {% for field in form.errors %}#}
+{#{% for error in form.errors[field] %}#}
+{#    <div class="alert alert-error">#}
+{#        <strong>Error!</strong> {{error}}#}
+{#    </div>#}
+{#{% endfor %}#}
+{#{% endfor %}#}
                 </div>
             </div>
         </form>
