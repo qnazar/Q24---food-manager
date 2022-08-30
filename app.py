@@ -11,6 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
+from config import *
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient, Meal
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
     ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, ProductsForMealForm, AddMealForm
@@ -18,7 +19,7 @@ from helpers import stock_statistics, sort_the_stock, select_query, measure_conv
 
 
 app = Flask(__name__)
-app.config.from_pyfile('config.py')
+app.config.from_object(ProductionConfig())
 
 # DB initialization
 db.init_app(app)
@@ -52,7 +53,7 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    print(session)
+    print(os.getenv("SECRET_KEY"))
     return render_template('home.html', title='Home')
 
 
