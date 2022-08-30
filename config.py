@@ -26,7 +26,7 @@ class DevelopmentConfig(Config):
 
 
 class ProductionConfig(Config):
-    DATABASE_URL = os.environ.get('DATABASE_URL').replace('postgres', 'postgresql')
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres', 'postgresql')
 
 
 

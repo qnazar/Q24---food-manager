@@ -11,7 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from config import *
+from config import ProductionConfig
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient, Meal
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
     ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, ProductsForMealForm, AddMealForm
