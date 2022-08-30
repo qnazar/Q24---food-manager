@@ -33,7 +33,7 @@ csrf.init_app(app)
 
 # Mail agent for email confirmation and serializer
 mail = Mail(app)
-s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+s = URLSafeTimedSerializer(os.environ.get('SECRET_KEY'))
 
 # Login initialization
 login_manager = LoginManager()
@@ -75,7 +75,7 @@ def registration():
 
             # sending email confirmation
             token = s.dumps(user.email, salt='email-confirm')
-            msg = Message('Confirm email', sender=app.config['MAIL_USERNAME'], recipients=[user.email])
+            msg = Message('Confirm email', sender=os.environ.get('MAIL_USERNAME'), recipients=[user.email])
             link = url_for('confirm_email', token=token, _external=True)
             msg.body = f'Your link is {link}'
             mail.send(msg)
