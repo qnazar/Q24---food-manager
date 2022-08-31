@@ -28,12 +28,3 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL').replace('postgres', 'postgresql')
-
-
-
-# TODO need to fix deploy db connection
-#DATABASE_URL = 'postgresql://mndnusjyggiwvj:fe99a1c7b460e709520e0b6d1796590849362ac37af68923a2815e9c36cbaa7c@ec2-99-80-170-190.eu-west-1.compute.amazonaws.com:5432/d2tsirtb3pcjm3'
-
-
-# SQLALCHEMY_DATABASE_URI = DATABASE_URL
-

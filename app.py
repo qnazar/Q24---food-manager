@@ -11,7 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from config import ProductionConfig
+from config import ProductionConfig as Conf
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient, Meal
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
     ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, ProductsForMealForm, AddMealForm
@@ -19,7 +19,7 @@ from helpers import stock_statistics, sort_the_stock, select_query, measure_conv
 
 
 app = Flask(__name__)
-app.config.from_object(ProductionConfig())
+app.config.from_object(Conf())
 
 # DB initialization
 db.init_app(app)

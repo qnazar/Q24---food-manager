@@ -16,7 +16,7 @@ class MyFloatField(FloatField):
 
 
 class RegisterForm(FlaskForm):
-    email = EmailField('Електронна адреса', validators=[DataRequired()])  # TODO email validator
+    email = EmailField('Електронна адреса', validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired(),
                                                    Length(5, 20, message="Pw should be at list %(min)d symbols"),
                                                    EqualTo('password_confirm', message="Passwords  need to match!")])
