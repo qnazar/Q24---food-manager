@@ -59,7 +59,8 @@ def measure_converter(quantity, unit):
 def use_from_stock(item: Stock, quantity: int) -> bool:
     if quantity <= item.quantity:
         price_per_unit = item.price / item.quantity
-        item.quantity -= quantity
+        item.quantity -= float(quantity)
+        item.quantity = round(item.quantity, 3)
         item.status = 'у вжитку' if item.quantity > 0 else 'використано'
         item.price = round(item.quantity * price_per_unit, 2)
         db.session.commit()

@@ -2,14 +2,52 @@
 
 {% block content %}
 <div class="container">
-    <h4>{{ recipe.name }}</h4>
-    <ul>
-        {% for ingredient in recipe.ingredient %}
-        <li>{{ ingredient.product.name }} {{ ingredient.quantity }} {{ ingredient.measure }}</li>
-        {% endfor %}
-    </ul>
-    <p>{{ recipe.description }}</p>
-    <p>{{ recipe.instruction }}</p>
-    <img src="../static/images/recipes/{{ recipe.picture }}" alt="..."/>
+    <div class="row g-4 my-5">
+        <div class="col-4">
+            <div class="card">
+                <img src="../static/images/recipes/{{ recipe.picture }}" alt="{{ recipe.name }}" class="card-img-top"/>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {% for ingredient in recipe.ingredient %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ ingredient.product.name }}
+                            <span class="badge bg-primary rounded-pill">{{ ingredient.quantity }} {{ ingredient.measure }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-8 g-4">
+            <div class="row g-4 ms-1">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary rounded-pill">{{ recipe.complexity }}</span>
+                            {{ recipe.name }}
+                            <span class="badge bg-primary rounded-pill">{{ recipe.time }} хв</span>
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ recipe.description }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 my-1 ms-1">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title">Спосіб приготування</h5>
+                    </div>
+                    <div class="card-body">
+                        {% set inctruction = recipe.instruction.split('\n') %}
+                        {% for line in inctruction %}
+                        <p>{{ line }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

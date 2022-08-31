@@ -36,7 +36,7 @@
                     <div class="col-md-8">
                         <div class="card d-flex" id="my_products">
                             <div class="card-header p-0">
-                                <h5 class="card-text">Мої продукти</h5>
+                                <h5 class="card-title">Мої продукти</h5>
                             </div>
                             <div class="card-body p-1">
                                 <table class="table table-sm table-striped-columns table-primary m-0">
@@ -66,12 +66,16 @@
                     </div>
                     <div class="col-md-4">
                         <div class="card d-flex h-100">
-                            <div class="card-header">
-
+                            <div class="card-header p-0">
+                                <h5 class="card-title">Рецепт дня</h5>
                             </div>
+                                <span class="text-center">
+                                    <a href="{{ url_for('recipe_info', id=1) }}" class="card-title text-center">Шакшука</a>
+                                </span>
                         </div>
                     </div>
                 </div>
+
                 <div class="row my-4">
                     <div class="col-md-4">
                         <div class="card d-flex" id="physical">
@@ -172,8 +176,19 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="card d-flex">
-                                    <div class="card-header"></div>
-                                    <div class="card-body"></div>
+                                    <div class="card-header p-0">
+                                        <h5 class="card-title">Прийоми їжі</h5>
+                                    </div>
+
+                                        <ul class="list-group list-group-flush">
+                                            {% for meal in meals %}
+                                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                    {{ meal.name }}
+                                                    <span class="badge bg-primary rounded-pill">{{ meal.kcal }} ккал</span>
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+
                                 </div>
                             </div>
                         </div>

@@ -31,7 +31,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="row p-2">
                 <div class="col-3">
                     <div class="form-floating input-group mb-3">
@@ -67,6 +66,11 @@
                                 ?
                              </button>
                          </span>
+                         {% for error in form.activity.errors %}
+                            <div class="alert alert-danger">
+                            {{ error }}
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
