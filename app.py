@@ -11,7 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 import uuid
 import os
 
-from config import ProductionConfig as Conf
+from config import DevelopmentConfig as Conf
 from models import db, User, Profile, Stock, Product, ProductsCategory, Trash, ShoppingList, Recipe, Ingredient, Meal
 from forms import RegisterForm, LoginForm, ProfileForm, ProfilePicForm, StockForm, ProductForm, UseProductForm, \
     ShoppingForm, TrashFilterForm, RecipeForm, IngredientForm, ProductsForMealForm, AddMealForm
@@ -461,6 +461,8 @@ def meal():
         elif s := Stock.query.filter_by(product_id=product.id, user_id=current_user.id).first():
             if s.measure != product_form.measure.data:
                 flash(f'Продукт має бути вказаний в "{s.measure}"')
+            elif s.product.name in session['products']:
+                flash('Цей продукт вже додано')
             elif product_form.quantity.data > s.quantity:
                 flash('Нема стільки продукту')
             else:
@@ -520,14 +522,19 @@ def meal_nutrition_calculator():
 
     if product_form.validate_on_submit() and product_form.add.data:
         product = Product.query.filter_by(name=product_form.product.data).first()
-        for key, value in results.items():
-            if key == 'weight':
-                products[product] = {key: f'{product_form.quantity.data} {product_form.measure.data}'}
-                weight = measure_converter(product_form.quantity.data, product_form.measure.data)
-                results[key] += weight
-                continue
-            results[key] += round(getattr(product, key) * weight / 100, 1)
-            products[product].update([(key, round(getattr(product, key) * weight / 100, 1))])
+        if not product:
+            flash("В базі немає такого продукту")
+        elif product in products:
+            flash("Цей продукт вже додано")
+        else:
+            for key, value in results.items():
+                if key == 'weight':
+                    products[product] = {key: f'{product_form.quantity.data} {product_form.measure.data}'}
+                    weight = measure_converter(product_form.quantity.data, product_form.measure.data)
+                    results[key] += weight
+                    continue
+                results[key] += round(getattr(product, key) * weight / 100, 1)
+                products[product].update([(key, round(getattr(product, key) * weight / 100, 1))])
 
     if meal_form.validate_on_submit() and meal_form.clear.data:
         products = {}
