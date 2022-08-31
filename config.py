@@ -16,6 +16,7 @@ class Config(object):
 
 
 class DevelopmentConfig(Config):
+    DEBUG = True
     PG_USER = os.environ.get('PG_USER')
     PG_PSSWRD = os.environ.get('PG_PSSWRD')
     PG_HOST = os.environ.get('PG_HOST')
