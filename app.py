@@ -508,40 +508,42 @@ def meal():
                            meal_form=meal_form, products=session['products'], all_products=all_products)
 
 
-products: dict = {}
-results: dict = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
-
-
+@login_required
 @app.route('/meal_nutrition_calculator', methods=['GET', 'POST'])
 def meal_nutrition_calculator():
     """Калькулятор калорійності страв. Доступний без логіну, нічого не зберігає"""
-    global products, results
     all_products = Product.query.all()
     product_form = ProductsForMealForm()
     meal_form = AddMealForm()
 
+    if 'products2' not in session or 'results2' not in session:
+        session['products2'] = {}
+        session['results2'] = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+
     if product_form.validate_on_submit() and product_form.add.data:
+
         product = Product.query.filter_by(name=product_form.product.data).first()
         if not product:
             flash("В базі немає такого продукту")
-        elif product in products:
+        elif product.name in session['products2']:
             flash("Цей продукт вже додано")
         else:
-            for key, value in results.items():
+            session['products2'][str(product)] = {'weight': (product_form.quantity.data, product_form.measure.data)}
+            weight = round(measure_converter(product_form.quantity.data, product_form.measure.data), 2)
+            session['results2']['weight'] += weight
+            for key, value in session['results2'].items():
                 if key == 'weight':
-                    products[product] = {key: f'{product_form.quantity.data} {product_form.measure.data}'}
-                    weight = measure_converter(product_form.quantity.data, product_form.measure.data)
-                    results[key] += weight
                     continue
-                results[key] += round(getattr(product, key) * weight / 100, 1)
-                products[product].update([(key, round(getattr(product, key) * weight / 100, 1))])
+                session['results2'][key] += round(getattr(product, key) * weight / 100, 1)
+                session['products2'][str(product)].update([(key, round(getattr(product, key) * weight / 100, 1))])
 
     if meal_form.validate_on_submit() and meal_form.clear.data:
-        products = {}
-        results = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
+        session['products2'] = {}
+        session['results2'] = {'weight': 0, 'kcal': 0, 'proteins': 0, 'fats': 0, 'carbs': 0, 'fibers': 0}
 
     return render_template('meal_nutrition_calculator.html', title='Калорійність', all_products=all_products,
-                           products=products, product_form=product_form, meal_form=meal_form, results=results)
+                           products=session['products2'], product_form=product_form, meal_form=meal_form,
+                           results=session['results2'])
 
 
 @app.errorhandler(404)
