@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1 class='text-black-100 my-3' style="text-align: center">РЕЄСТРАЦІЯ</h1>
+    <div class="container w-50 shadow-lg p-4 mb-5 bg-body rounded my-5">
+        <form method="post">
+            {{ form.hidden_tag() }}
+            <div class="row p-2">
+                <div class="col">
+                    <div class="form-floating">
+                        {{ form.email(class="form-control", placeholder='email') }}
+                        {{ form.email.label(class="form-label") }}
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col">
+                    <div class="form-floating">
+                        {{ form.password(class="form-control", placeholder='password') }}
+                        {{ form.password.label(class="form-label") }}
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col">
+                    <div class="form-floating">
+                        {{ form.password_confirm(class="form-control", placeholder='password_confirm') }}
+                        {{ form.password_confirm.label(class="form-label") }}
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2">
+                <div class="col">
+                    <div class="form-floating">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </div>
+            </div>
+        </form>
+        <p class="text-center">Вже маєш профіль? Увійди в систему <a href="{{ url_for('auth_bp.login') }}">тут</a> </p>
+    </div>
+
+{% endblock %}

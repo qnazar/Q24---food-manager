@@ -1,0 +1,26 @@
+{% for cat, msg in get_flashed_messages(with_categories=True) %}
+    <button type="button" class="btn btn-primary" id="liveToastBtn" style="display: none">Show live toast</button>
+
+    <div class="toast-container align-items-center border-dark position-fixed bottom-0 end-0 p-3 show">
+        <div class="toast show">
+            <div class="toast-header">
+                <img src="{{ url_for('home_bp.static',filename='/images/toasts.png') }}" height="18" width="18" class="rounded me-2" alt="...">
+                <h6>Сповіщення</h6>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body">
+                <h5>{{ msg }}</h5>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<script>
+    document.getElementById("toastbtn").onclick = function() {
+        let toastElList = [].slice.call(document.querySelectorAll('.toast'))
+        let toastList = toastElList.map(function(toastEl) {
+            return new bootstrap.Toast(toastEl)
+        })
+        toastList.forEach(toast => toast.show())
+    }
+</script>

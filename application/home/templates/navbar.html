@@ -1,0 +1,71 @@
+<nav class="navbar navbar-expand-lg bg-primary text-bg-light">
+
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{{ url_for('home_bp.index') }}">Q24</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('profile_bp.user', id=current_user.id) }}">Мій профіль</a>
+        </li>
+        {% endif %}
+
+        <li class="nav-item dropdown">
+            <a class="nav-link" href="{{ url_for('profile_bp.calculations', mode='about') }}">Розрахунки</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('tracking_bp.stock') }}">Мої продукти</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('recipes_bp.recipes') }}">Рецепти</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('tracking_bp.meal_nutrition_calculator') }}">Калорійність страви</a>
+        </li>
+
+        <li class="nav-item">
+            <span class="nav-link"> | </span>
+        </li>
+
+        {% if not current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth_bp.registration') }}">Реєстрація</a>
+            </li>
+        {% endif %}
+
+        {% if not current_user.is_authenticated %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth_bp.login') }}">Увійти</a>
+            </li>
+        {% else %}
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('auth_bp.logout') }}">Вийти</a>
+            </li>
+        {% endif %}
+
+{#        <li class="nav-item">#}
+{#            <span class="nav-link"> | </span>#}
+{#        </li>#}
+{##}
+{#        <li class="nav-item">#}
+{#            <a class="nav-link" href="{{ url_for('add_product') }}">Додати продукт</a>#}
+{#        </li>#}
+{##}
+{#        <li class="nav-item">#}
+{#            <a class="nav-link" href="{{ url_for('add_recipe') }}">Додати рецепт</a>#}
+{#        </li>#}
+    </ul>
+
+    </div>
+
+    </div>
+
+</nav>

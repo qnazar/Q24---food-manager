@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row row-cols-1 row-cols-md-3 g-4 my-0">
+        {% for recipe in recipes %}
+        <div class="col">
+            <div class="card border-primary">
+                <img src="{{ url_for('recipes_bp.static', filename='images/recipes/' + recipe.picture) }}" class="card-img-top" style="object-fit: cover; height: 200px" alt="..."/>
+                <div class="card-header text-center"><strong>{{ recipe.name }}</strong></div>
+                <div class="card-body" style="height: 200px; overflow: hidden">
+                    <p>{{ recipe.description }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('recipes_bp.recipe_info', id=recipe.id) }}" class="btn btn-primary">Рецепт</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
