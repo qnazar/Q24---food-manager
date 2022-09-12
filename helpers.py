@@ -21,8 +21,12 @@ def stock_statistics(stocks: list) -> dict:
     return result
 
 
-def sort_the_stock(current_user):
-    users_stock = Stock.query.filter_by(user_id=current_user.id).order_by(Stock.expired_date).all()
+def sort_the_stock(current_user, cat_id=0):  # not working category filtering
+    if cat_id == 0:
+        users_stock = Stock.query.filter_by(user_id=current_user.id).order_by(Stock.expired_date).all()
+    else:
+        users_stock = Stock.query.filter(Stock.user_id == current_user.id,
+                                         Stock.product.category_id == cat_id).order_by(Stock.expired_date).all()
     if not users_stock:
         return []
     output = []

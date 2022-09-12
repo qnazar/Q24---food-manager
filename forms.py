@@ -121,3 +121,8 @@ class AddMealForm(FlaskForm):
     name = StringField('Назва страви', default='Без назви')
     submit = SubmitField('Додати')
     clear = SubmitField('Очистити')
+
+
+class StockFilterForm(FlaskForm):
+    choice = SelectField("Категорія")
+    show = SubmitField('Показати')
