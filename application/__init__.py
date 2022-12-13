@@ -7,8 +7,10 @@ from flask_mail import Mail
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 from itsdangerous import URLSafeTimedSerializer
+from celery import Celery
 
 from config import DevelopmentConfig as Config
+from celery_utils import init_celery
 
 
 db = SQLAlchemy()
@@ -19,7 +21,17 @@ serializer = URLSafeTimedSerializer(os.environ.get('SECRET_KEY'))
 mail = Mail()
 
 
-def init_app():
+def make_celery(app_name=__name__):
+    return Celery(app_name,
+                  backend=Config.CELERY_RESULT_BACKEND,
+                  broker=Config.CELERY_BROKER_URL,
+                  include=['application.auth.tasks'])
+
+
+celery = make_celery()
+
+
+def init_app(**kwargs):
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -29,6 +41,9 @@ def init_app():
     login_manager.init_app(app)
     login_manager.login_view = 'auth_bp.login'
     mail.init_app(app)
+
+    if kwargs.get('celery'):
+        init_celery(kwargs.get('celery'), app)
 
     with app.app_context():
         db.create_all()
