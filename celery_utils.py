@@ -8,4 +8,3 @@ def init_celery(celery, app):
                 return TaskBase.__call__(self, *args, **kwargs)
 
     celery.Task = ContextTask
-    print('Celery is inited', celery.Task)
