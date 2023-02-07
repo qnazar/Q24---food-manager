@@ -5,7 +5,8 @@ from flask import render_template, abort, request, flash
 from werkzeug.utils import secure_filename
 
 from application import db
-from application.models import Recipe, Ingredient, Product
+from .models import Recipe, Ingredient
+from application.tracking.models import Product
 from application.forms import RecipeForm, IngredientForm
 from application.recipes import recipes_bp
 

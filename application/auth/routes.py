@@ -5,7 +5,7 @@ from itsdangerous import SignatureExpired
 
 from application import serializer, login_manager
 from application.forms import RegisterForm, LoginForm
-from application.models import db, User
+from .models import db, User
 from application.auth.tasks import send_registration_email
 from application.auth import auth_bp
 

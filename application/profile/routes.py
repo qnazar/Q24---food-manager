@@ -6,7 +6,8 @@ from werkzeug.utils import secure_filename
 import uuid
 
 from application import db
-from application.models import Profile, Meal, Stock, ShoppingList, Trash
+from .models import Profile
+from application.tracking.models import  Meal, Stock, ShoppingList, Trash
 from application.forms import ProfileForm, ProfilePicForm
 from application.helpers import stock_statistics
 from application.profile import profile_bp
