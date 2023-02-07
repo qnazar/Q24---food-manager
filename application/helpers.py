@@ -1,6 +1,7 @@
 import datetime
 
-from .models import db, Stock, ProductsCategory
+from . import db
+from .tracking.models import Stock, ProductsCategory
 
 
 def stock_statistics(stocks: list) -> dict:

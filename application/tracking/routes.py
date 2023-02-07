@@ -4,7 +4,7 @@ from flask import render_template, redirect, flash, url_for, session
 from flask_login import login_required, current_user
 
 from application import db
-from application.models import Product, Stock, Trash, ShoppingList, Meal
+from .models import Product, Stock, Trash, ShoppingList, Meal
 from application.forms import StockForm, ShoppingForm, TrashFilterForm, UseProductForm, ProductsForMealForm, AddMealForm, \
     StockFilterForm
 from application.helpers import sort_the_stock, use_from_stock, stock_statistics, measure_converter, select_query
