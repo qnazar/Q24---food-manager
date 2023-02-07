@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
-load_dotenv()
+load_dotenv(dotenv_path=r'C:\Users\user\Documents\GitHub\food\env\local\.env')
 
 
 class BaseConfig:
