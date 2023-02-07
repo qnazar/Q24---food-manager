@@ -1,13 +1,13 @@
 import os
 import uuid
-from flask import Blueprint, render_template, abort, request, flash
-from werkzeug.utils import secure_filename
-from application import db
-from models import Recipe, Ingredient, Product
-from forms import RecipeForm, IngredientForm
 
-recipes_bp = Blueprint('recipes_bp', __name__, template_folder='templates',
-                       static_folder='static', static_url_path='/recipes/static')
+from flask import render_template, abort, request, flash
+from werkzeug.utils import secure_filename
+
+from application import db
+from application.models import Recipe, Ingredient, Product
+from application.forms import RecipeForm, IngredientForm
+from application.recipes import recipes_bp
 
 
 @recipes_bp.route('/recipes', methods=['GET', 'POST'])

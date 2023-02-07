@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  web:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./compose/local/flask/Dockerfile
+    image: python:3.10-slim-buster
+    command: /start
+    volumes:
+      - .:/app
+    ports:
+      - '5010:5000'
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=app
+    depends_on:
+      - redis
+      - postgres
+
+  postgres:
+    container_name: postgres_db
+    image: postgres:14-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${PG_USER}
+      - POSTGRES_PASSWORD=${PG_PSSWRD}
+      - POSTGRES_DB=${PG_DATABASE}
+    ports:
+      - "5432:5432"
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+
+  celery_worker:
+    container_name: celery_worker
+    build:
+      context: .
+      dockerfile: ./compose/local/flask/Dockerfile
+    hostname: worker
+    command: /start-celeryworker
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=app
+    depends_on:
+      - redis
+      - postgres
+
+  celery_beat:
+    container_name: celery_beat
+    build:
+      context: .
+      dockerfile: ./compose/local/flask/Dockerfile
+    command: /start-celerybeat
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=app
+    depends_on:
+      - redis
+      - postgres
+
+  flower:
+    container_name: flower
+    build:
+      context: .
+      dockerfile: ./compose/local/flask/Dockerfile
+    command: /start-flower
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    environment:
+      - FLASK_APP=app
+    ports:
+      - '5557:5555'
+    depends_on:
+      - redis
+      - postgres
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 80
+    ports:
+      - '8080:80'
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin-data:

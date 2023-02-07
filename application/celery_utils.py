@@ -1,5 +1,10 @@
-def init_celery(celery, app):
-    celery.conf.update(app.config)
+from celery import current_app as current_celery_app
+
+
+def make_celery(app):
+    celery = current_celery_app
+    celery.config_from_object(app.config, namespace='CELERY')
+    celery.set_default()
     TaskBase = celery.Task
 
     class ContextTask(TaskBase):

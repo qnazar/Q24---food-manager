@@ -1,17 +1,14 @@
 import datetime
 
-from flask import Blueprint, render_template, redirect, flash, url_for, session
+from flask import render_template, redirect, flash, url_for, session
 from flask_login import login_required, current_user
 
 from application import db
-from models import Product, Stock, Trash, ShoppingList, Meal
-from forms import StockForm, ShoppingForm, TrashFilterForm, UseProductForm, ProductsForMealForm, AddMealForm, \
+from application.models import Product, Stock, Trash, ShoppingList, Meal
+from application.forms import StockForm, ShoppingForm, TrashFilterForm, UseProductForm, ProductsForMealForm, AddMealForm, \
     StockFilterForm
-from helpers import sort_the_stock, use_from_stock, stock_statistics, measure_converter, select_query
-
-
-tracking_bp = Blueprint('tracking_bp', __name__, template_folder='templates',
-                        static_folder='static', static_url_path='/tracking/static')
+from application.helpers import sort_the_stock, use_from_stock, stock_statistics, measure_converter, select_query
+from application.tracking import tracking_bp
 
 
 @tracking_bp.route('/stock', methods=['GET', 'POST'])

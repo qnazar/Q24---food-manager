@@ -1,18 +1,15 @@
 import os
 
-from flask import Blueprint, render_template, redirect, abort, flash, url_for, request
+from flask import render_template, redirect, abort, flash, url_for, request
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 import uuid
 
 from application import db
-from models import Profile, Meal, Stock, ShoppingList, Trash
-from forms import ProfileForm, ProfilePicForm
-from helpers import stock_statistics
-
-
-profile_bp = Blueprint('profile_bp', __name__, template_folder='templates',
-                       static_folder='static', static_url_path='/profile/static')
+from application.models import Profile, Meal, Stock, ShoppingList, Trash
+from application.forms import ProfileForm, ProfilePicForm
+from application.helpers import stock_statistics
+from application.profile import profile_bp
 
 
 @profile_bp.route('/user/<int:id>', methods=['GET', 'POST'])

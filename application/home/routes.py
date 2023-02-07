@@ -1,7 +1,6 @@
-from flask import Blueprint, render_template, session
+from flask import render_template, session
 
-home_bp = Blueprint('home_bp', __name__, template_folder='templates',
-                    static_folder='static', static_url_path='/home/static')
+from application.home import home_bp
 
 
 @home_bp.before_app_first_request

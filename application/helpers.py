@@ -1,5 +1,6 @@
-from models import db, Stock, ProductsCategory
 import datetime
+
+from .models import db, Stock, ProductsCategory
 
 
 def stock_statistics(stocks: list) -> dict:

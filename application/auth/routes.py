@@ -1,16 +1,13 @@
-from flask import Blueprint, render_template, redirect, flash, url_for
+from flask import render_template, redirect, flash, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_required, login_user, logout_user, current_user
 from itsdangerous import SignatureExpired
 
 from application import serializer, login_manager
-from forms import RegisterForm, LoginForm
-from models import db, User
+from application.forms import RegisterForm, LoginForm
+from application.models import db, User
 from application.auth.tasks import send_registration_email
-
-
-auth_bp = Blueprint('auth_bp', __name__, template_folder='templates',
-                    static_folder='static', static_url_path='/auth/static')
+from application.auth import auth_bp
 
 
 @login_manager.user_loader
@@ -40,11 +37,6 @@ def registration():
             link = url_for('auth_bp.confirm_email', token=token, _external=True)
 
             send_registration_email.delay(email=user.email, link=link)
-
-            # msg = Message('Confirm email', sender=os.getenv('MAIL_USERNAME'), recipients=[user.email])
-            # link = url_for('auth_bp.confirm_email', token=token, _external=True)
-            # msg.body = f'Your link is {link}'
-            # mail.send(msg)
 
             return redirect(location=url_for('profile_bp.user', id=user.id))
         else:
