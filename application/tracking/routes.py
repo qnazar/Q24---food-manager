@@ -9,6 +9,17 @@ from application.forms import StockForm, ShoppingForm, TrashFilterForm, UseProdu
     StockFilterForm
 from application.helpers import sort_the_stock, use_from_stock, stock_statistics, measure_converter, select_query
 from application.tracking import tracking_bp
+from application.auth.models import User
+
+
+@tracking_bp.route('/digest/subscribe', methods=['GET'])
+@login_required
+def digest():
+    user = User.query.get(current_user.id)
+    user.profile.daily_stock_subscription = True
+    db.session.commit()
+    flash('Ви підписалися на щоденну розсилку дайджесту ваших продуктів')
+    return redirect(url_for('profile_bp.user', id=current_user.id))
 
 
 @tracking_bp.route('/stock', methods=['GET', 'POST'])

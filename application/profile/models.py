@@ -27,6 +27,8 @@ class Profile(db.Model):
     min_weight = db.Column(db.Float())
     max_weight = db.Column(db.Float())
 
+    daily_stock_subscription = db.Column(db.Boolean, default=False)
+
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = relationship('User', back_populates='profile')
     dynamics = db.relationship('ProfileDynamic', backref='profile', lazy=True)

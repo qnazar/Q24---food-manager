@@ -6,7 +6,6 @@ services:
     build:
       context: .
       dockerfile: ./compose/local/flask/Dockerfile
-    image: python:3.10-slim-buster
     command: /start
     volumes:
       - .:/app

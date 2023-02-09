@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
     profile_pic = db.Column(db.String)
 
     profile = relationship('Profile', uselist=False, back_populates='user')
-    stocks = relationship('Stock', backref='user')
+    stock = relationship('Stock', backref='user')
 
     @property
     def password(self):
