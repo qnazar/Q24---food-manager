@@ -6,7 +6,7 @@ from itsdangerous import SignatureExpired
 from application import serializer, login_manager
 from application.forms import RegisterForm, LoginForm
 from .models import db, User
-from application.auth.tasks import send_registration_email
+from application.auth.tasks import send_registration_email, testing_celery_beat
 from application.auth import auth_bp
 
 
@@ -37,6 +37,7 @@ def registration():
             link = url_for('auth_bp.confirm_email', token=token, _external=True)
 
             send_registration_email.delay(email=user.email, link=link)
+            testing_celery_beat.delay()
 
             return redirect(location=url_for('profile_bp.user', id=user.id))
         else:
