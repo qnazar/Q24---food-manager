@@ -1,6 +1,6 @@
-# Flask Expiry Tracker
+# Q24
 
-Flask Expiry Tracker is a web application built with Flask that enables users to easily track the expiration dates of their products. It also includes additional functionality for generating shopping lists and calculating kcal values. The app was developed using Docker and features Celery and Redis for efficient handling of async tasks.
+Q24 is a web application built with Flask that enables users to easily track the expiration dates of their products. It also includes additional functionality for generating shopping lists and calculating kcal values. The app was developed using Docker and features Celery and Redis for efficient handling of async tasks.
 
 ## Features
 
@@ -17,12 +17,8 @@ Flask Expiry Tracker is a web application built with Flask that enables users to
 
 ## Installation
 
-To install Flask Expiry Tracker, follow these steps:
+To install Q24, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/yourusername/flask-expiry-tracker.git`
-2. Install the necessary dependencies: `pip install -r requirements.txt`
-3. Start the app: `docker-compose -d up`
-
-## DB population
-
-Coming soon...
+1. Clone the repository: `git clone https://github.com/qnazar/Q24---food-manager`
+2. Start the app: `docker-compose up --build`
+3. Go to `127.0.0.1:5010`

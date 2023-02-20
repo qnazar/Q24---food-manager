@@ -4,6 +4,14 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-falsk db migrate
+echo 'Running migrations'
+flask db migrate
 flask db upgrade
+echo 'DB Schema has been updated'
+
+echo 'Starting db population'
+python ../populate_db.py
+echo 'DB has been populated'
+
+echo 'Running the app'
 flask run --host=0.0.0.0

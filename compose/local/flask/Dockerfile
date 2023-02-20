@@ -22,6 +22,10 @@ COPY ./compose/local/flask/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
 
+COPY ./compose/local/flask/populate_db.py /populate_db.py
+
+COPY ./compose/data/ /data/
+
 COPY ./compose/local/flask/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
