@@ -1,196 +1,381 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('profile_bp.static', filename='css/user.css') }}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+{% endblock %}
+
+
 {% block content %}
 
-    <div class="container text-center">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="row my-4">
-                    <div class="col-md-12">
-                        <div class="card d-flex" id="main_info">
-                            <div class="card-header">
-                                <h4 class="card-text">{{ person.first_name if person.first_name }} {{ person.last_name if person.last_name }}</h4>
-                            </div>
-                            {% if current_user.profile_pic %}
-                        <img src="{{ url_for('profile_bp.static', filename='images/profiles/' + current_user.profile_pic) }}" class="card-img-top p-1 rounded" alt="...">
-                    {% else %}
-                        <img src="{{ url_for('profile_bp.static', filename='images/user-pic.png') }}" class="card-img-top p-1 rounded" alt="...">
-                    {% endif %}
-                            <div class="card-footer text-center">
-                                <a class="btn btn-primary btn-sm" href="{{ url_for('profile_bp.upload_picture') }}">Змінити фото</a>
-                                <a class="btn btn-primary btn-sm" href="{{ url_for('profile_bp.delete_picture') }}">Видалити фото</a>
+<div class="container bootstrap snippets bootdey">
+    <div class="row">
+
+        <div class="profile-nav col-lg-3">
+
+            <div class="panel w3-card-4">
+
+                <div class="user-heading round">
+                    <a href="{{ url_for('profile_bp.upload_picture') }}">
+                        {% if current_user.profile_pic %}
+                        <img src="{{ url_for('profile_bp.static', filename='images/profiles/' + current_user.profile_pic) }}"
+                             alt="...">
+                        {% else %}
+                        <img src="{{ url_for('profile_bp.static', filename='images/user-pic.png') }}" alt="...">
+                        {% endif %}
+                    </a>
+                    <h1>{{ person.first_name if person.first_name }} {{ person.last_name if person.last_name }}</h1>
+                    <p>{{ person.user.email }}</p>
+                </div>
+
+                <div class="list-group w-auto">
+                    <a href="{{ url_for('profile_bp.update_personal_info', id=user.id) }}"
+                       class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                        <h6 class="mb-0">Оновити дані</h6>
+                    </a>
+                    <a href="{{ url_for('tracking_bp.digest') }}"
+                       class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+                        <h6 class="mb-0">Підписатися на дайджест</h6>
+                    </a>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="profile-info col-lg-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="w3-panel w3-card mt-0">
+                        <div class="bio-chart">
+                            <div style="display: inline; width: 100px; height: 100px;">
+                                <canvas width="100" height="100px"></canvas>
+                                <span class="knob">{{ stats['count'] }}</span>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row my-4">
-                    <div class="col-md-12">
-                        <div class="card d-flex" id="update_btn">
-                            <a class="btn btn-primary" href="{{ url_for('profile_bp.update_personal_info', id=user.id) }}">Оновити дані</a>
-                            <a class="btn btn-primary" href="{{ url_for('tracking_bp.digest') }}">Підписатися на дайджест</a>
+                        <div class="bio-desk">
+                            <h4 class="card-header">Мої продукти</h4>
+                            <p>Калорій : {{ stats['kcal'] }}</p>
+
+                        </div>
+                        <div class="bio-chart">
+                            <canvas id="my-products" style="width: 100%; height: 100%"></canvas>
+                            <script>
+                                let names = ['Білки', 'Жири', 'Вуглеводи', 'Волокна'];
+                                let values = [
+                                    {{stats['protein']}},
+                                    {{stats['fat']}},
+                                    {{stats['carb']}},
+                                    {{stats['fiber']}},
+                                ];
+                                let colors = ["#00aba9", "#2b5797", "#e8c3b9", "#1e7145"];
+                                new Chart("my-products", {
+                                  type: "pie",
+                                  data: {
+                                    labels: names,
+                                    datasets: [{
+                                      backgroundColor: colors,
+                                      data: values
+                                    }]
+                                  },
+                                  options: {
+                                    legend: {
+                                        display: false
+                                    }
+                                  }
+                                });
+                            </script>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-9">
-                <div class="row my-4">
-                    <div class="col-md-8">
-                        <div class="card d-flex" id="my_products">
-                            <div class="card-header p-0">
-                                <h5 class="card-title">Мої продукти</h5>
-                            </div>
-                            <div class="card-body p-1">
-                                <table class="table table-sm table-striped-columns table-primary m-0">
-                                    <tr>
-                                        <td>Позицій</td>
-                                        <td>{{ stats['count']|round }}</td>
-                                        <td>Вага</td>
-                                        <td>{{ stats['weight']|round }}</td>
-                                        <td>Вартість</td>
-                                        <td>{{ stats['price']|round }}</td>
-                                        <td>Ккал</td>
-                                        <td>{{ stats['kcal']|round }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Білки</td>
-                                        <td>{{ stats['protein']|round }}</td>
-                                        <td>Жири</td>
-                                        <td>{{ stats['fat']|round }}</td>
-                                        <td>Вуглеводи</td>
-                                        <td>{{ stats['carb']|round }}</td>
-                                        <td>Волокна</td>
-                                        <td>{{ stats['fiber']|round }}</td>
-                                    </tr>
-                                </table>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="w3-panel w3-card">
+                        <div class="bio-chart">
+                            <div style="display: inline; width: 100px; height: 100px;">
+                                <canvas width="100" height="100px"></canvas>
+                                <span class="knob">35</span>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="card d-flex h-100">
-                            <div class="card-header p-0">
-                                <h5 class="card-title">Рецепт дня</h5>
-                            </div>
-                                <span class="text-center">
-                                    <a href="{{ url_for('recipes_bp.recipe_info', id=1) }}" class="card-title text-center">Шакшука</a>
-                                </span>
+                        <div class="bio-desk">
+                            <h4 class="card-header">Мої продукти</h4>
+                            <p>Калорій : 1354</p>
+                            <p>Білків : 15 г</p>
                         </div>
                     </div>
                 </div>
-
-                <div class="row my-4">
-                    <div class="col-md-4">
-                        <div class="card d-flex" id="physical">
-                            <div class="card-header p-0">
-                                <h5 class="card-title">Фізичні дані</h5>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="w3-panel w3-card">
+                        <div class="bio-chart">
+                            <div style="display: inline; width: 100%; height: 100%;">
+                                <canvas width="100%" height="100%"></canvas>
+                                <span class="knob">35</span>
                             </div>
-                                <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Вага
-                                        <span class="badge bg-primary rounded-pill">{{ person.weight if person.weight }} кг</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Зріст
-                                        <span class="badge bg-primary rounded-pill">{{ person.height if person.height }} см</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Активність
-                                        <span class="badge bg-primary rounded-pill">{{ person.activity if person.activity }}</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Статура
-                                        <span class="badge bg-primary rounded-pill">{{ person.constitution if person.constitution }}</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        IMT
-                                        <span class="badge bg-primary rounded-pill">{{ person.BMI if person.BMI }}</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Норма ккал
-                                        <span class="badge bg-primary rounded-pill">{{ person.DKI if person.DKI }} ккал</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Норма води
-                                        <span class="badge bg-primary rounded-pill">{{ person.DWN if person.DWN }} мл</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Межі ваги
-                                        <span class="badge bg-primary rounded-pill">{{ person.min_weight if person.IW }} - {{ person.max_weight if person.IW }} кг</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Ідеальна вага
-                                        <span class="badge bg-primary rounded-pill">{{ person.IW if person.IW }} кг</span>
-                                    </li>
-                                </ul>
+                        </div>
+                        <div class="bio-desk">
+                            <h4 class="card-header">Мої продукти</h4>
+                            <p>Калорій : 1354</p>
+                            <p>Білків : 15 г</p>
                         </div>
                     </div>
-                    <div class="col-md-8">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="card d-flex" id="my_trash_can">
-                                    <div class="card-header p-0">
-                                        <h5 class="card-title">Викинуто</h5>
-                                    </div>
-                                    <div class="card-body p-1">
-                                        <table class="table table-sm table-striped-columns table-primary m-0">
-                                    <tr>
-                                        <td>Позицій</td>
-                                        <td>{{ trash['count']|round }}</td>
-                                        <td>Вага</td>
-                                        <td>{{ trash['weight']|round }}</td>
-                                        <td>Вартість</td>
-                                        <td>{{ trash['price']|round }}</td>
-                                        <td>Ккал</td>
-                                        <td>{{ trash['kcal']|round }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Білки</td>
-                                        <td>{{ trash['protein']|round }}</td>
-                                        <td>Жири</td>
-                                        <td>{{ trash['fat']|round }}</td>
-                                        <td>Вуглеводи</td>
-                                        <td>{{ trash['carb']|round }}</td>
-                                        <td>Волокна</td>
-                                        <td>{{ trash['fiber']|round }}</td>
-                                    </tr>
-                                </table>
-                                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ФІЗИЧНІ ДАНІ -->
+        <div class="profile-info col-lg-3">
+            <div class="w3-panel w3-card-4 mt-0">
+                <ul class="w3-ul">
+                    <li><h4 class="card-header">Фізичні показники</h4></li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Вага
+                        <span class="badge bg-primary rounded-pill">{{ person.weight if person.weight }} кг</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Зріст
+                        <span class="badge bg-primary rounded-pill">{{ person.height if person.height }} см</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Активність
+                        <span class="badge bg-primary rounded-pill">{{ person.activity if person.activity }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Статура
+                        <span class="badge bg-primary rounded-pill">{{ person.constitution if person.constitution }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        IMT
+                        <span class="badge bg-primary rounded-pill">{{ person.BMI if person.BMI }}</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Норма ккал
+                        <span class="badge bg-primary rounded-pill">{{ person.DKI if person.DKI }} ккал</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Норма води
+                        <span class="badge bg-primary rounded-pill">{{ person.DWN if person.DWN }} мл</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Межі ваги
+                        <span class="badge bg-primary rounded-pill">{{ person.min_weight if person.IW }} - {{ person.max_weight if person.IW }} кг</span>
+                    </li>
+                    <li class="mb-2 list-group-item d-flex justify-content-between align-items-center">
+                        Ідеальна вага
+                        <span class="badge bg-primary rounded-pill">{{ person.IW if person.IW }} кг</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="w3-panel w3-card-4">
+                <h4 class="card-header">Рецепт дня</h4>
+                <div style="width: 100%; height: 150px"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="container text-center">
+    <div class="row">
+        <div class="col-md-3">
+            <div class="row my-4">
+                <div class="col-md-12">
+                    <div class="card d-flex" id="main_info">
+                        <div class="card-header">
+                            <h4 class="card-text">{{ person.first_name if person.first_name }} {{ person.last_name if
+                                person.last_name }}</h4>
+                        </div>
+                        {% if current_user.profile_pic %}
+                        <img src="{{ url_for('profile_bp.static', filename='images/profiles/' + current_user.profile_pic) }}"
+                             class="card-img-top p-1 rounded" alt="...">
+                        {% else %}
+                        <img src="{{ url_for('profile_bp.static', filename='images/user-pic.png') }}"
+                             class="card-img-top p-1 rounded" alt="...">
+                        {% endif %}
+                        <div class="card-footer text-center">
+                            <a class="btn btn-primary btn-sm" href="{{ url_for('profile_bp.upload_picture') }}">Змінити
+                                фото</a>
+                            <a class="btn btn-primary btn-sm" href="{{ url_for('profile_bp.delete_picture') }}">Видалити
+                                фото</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row my-4">
+                <div class="col-md-12">
+                    <div class="card d-flex" id="update_btn">
+                        <a class="btn btn-primary" href="{{ url_for('profile_bp.update_personal_info', id=user.id) }}">Оновити
+                            дані</a>
+                        <a class="btn btn-primary" href="{{ url_for('tracking_bp.digest') }}">Підписатися на
+                            дайджест</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="row my-4">
+                <div class="col-md-8">
+                    <div class="card d-flex" id="my_products">
+                        <div class="card-header p-0">
+                            <h5 class="card-title">Мої продукти</h5>
+                        </div>
+                        <div class="card-body p-1">
+                            <table class="table table-sm table-striped-columns table-primary m-0">
+                                <tr>
+                                    <td>Позицій</td>
+                                    <td>{{ stats['count']|round }}</td>
+                                    <td>Вага</td>
+                                    <td>{{ stats['weight']|round }}</td>
+                                    <td>Вартість</td>
+                                    <td>{{ stats['price']|round }}</td>
+                                    <td>Ккал</td>
+                                    <td>{{ stats['kcal']|round }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Білки</td>
+                                    <td>{{ stats['protein']|round }}</td>
+                                    <td>Жири</td>
+                                    <td>{{ stats['fat']|round }}</td>
+                                    <td>Вуглеводи</td>
+                                    <td>{{ stats['carb']|round }}</td>
+                                    <td>Волокна</td>
+                                    <td>{{ stats['fiber']|round }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card d-flex h-100">
+                        <div class="card-header p-0">
+                            <h5 class="card-title">Рецепт дня</h5>
+                        </div>
+                        <span class="text-center">
+                                    <a href="{{ url_for('recipes_bp.recipe_info', id=1) }}"
+                                       class="card-title text-center">Шакшука</a>
+                                </span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row my-4">
+                <div class="col-md-4">
+                    <div class="card d-flex" id="physical">
+                        <div class="card-header p-0">
+                            <h5 class="card-title">Фізичні дані</h5>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Вага
+                                <span class="badge bg-primary rounded-pill">{{ person.weight if person.weight }} кг</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Зріст
+                                <span class="badge bg-primary rounded-pill">{{ person.height if person.height }} см</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Активність
+                                <span class="badge bg-primary rounded-pill">{{ person.activity if person.activity }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Статура
+                                <span class="badge bg-primary rounded-pill">{{ person.constitution if person.constitution }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                IMT
+                                <span class="badge bg-primary rounded-pill">{{ person.BMI if person.BMI }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Норма ккал
+                                <span class="badge bg-primary rounded-pill">{{ person.DKI if person.DKI }} ккал</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Норма води
+                                <span class="badge bg-primary rounded-pill">{{ person.DWN if person.DWN }} мл</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Межі ваги
+                                <span class="badge bg-primary rounded-pill">{{ person.min_weight if person.IW }} - {{ person.max_weight if person.IW }} кг</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Ідеальна вага
+                                <span class="badge bg-primary rounded-pill">{{ person.IW if person.IW }} кг</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card d-flex" id="my_trash_can">
+                                <div class="card-header p-0">
+                                    <h5 class="card-title">Викинуто</h5>
+                                </div>
+                                <div class="card-body p-1">
+                                    <table class="table table-sm table-striped-columns table-primary m-0">
+                                        <tr>
+                                            <td>Позицій</td>
+                                            <td>{{ trash['count']|round }}</td>
+                                            <td>Вага</td>
+                                            <td>{{ trash['weight']|round }}</td>
+                                            <td>Вартість</td>
+                                            <td>{{ trash['price']|round }}</td>
+                                            <td>Ккал</td>
+                                            <td>{{ trash['kcal']|round }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Білки</td>
+                                            <td>{{ trash['protein']|round }}</td>
+                                            <td>Жири</td>
+                                            <td>{{ trash['fat']|round }}</td>
+                                            <td>Вуглеводи</td>
+                                            <td>{{ trash['carb']|round }}</td>
+                                            <td>Волокна</td>
+                                            <td>{{ trash['fiber']|round }}</td>
+                                        </tr>
+                                    </table>
                                 </div>
                             </div>
                         </div>
-                        <div class="row my-4">
-                            <div class="col-md-6">
-                                <div class="card d-flex">
-                                    <div class="card-header p-0">
-                                        <h5 class="card-title">Список покупок</h5>
-                                    </div>
-
-                                        <ul class="list-group list-group-flush">
-                                        {% for item in shop_list %}
-                                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                {{ item.product.name[:15] + '...' if item.product.name|length > 15 else item.product.name }}
-                                                <span class="badge bg-primary rounded-pill">{{ item.quantity }} {{ item.measure }}</span>
-                                            </li>
-                                        {% endfor %}
-                                        </ul>
-
+                    </div>
+                    <div class="row my-4">
+                        <div class="col-md-6">
+                            <div class="card d-flex">
+                                <div class="card-header p-0">
+                                    <h5 class="card-title">Список покупок</h5>
                                 </div>
+
+                                <ul class="list-group list-group-flush">
+                                    {% for item in shop_list %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ item.product.name[:15] + '...' if item.product.name|length > 15 else
+                                        item.product.name }}
+                                        <span class="badge bg-primary rounded-pill">{{ item.quantity }} {{ item.measure }}</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+
                             </div>
-                            <div class="col-md-6">
-                                <div class="card d-flex">
-                                    <div class="card-header p-0">
-                                        <h5 class="card-title">Прийоми їжі</h5>
-                                    </div>
-
-                                        <ul class="list-group list-group-flush">
-                                            {% for meal in meals %}
-                                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                                    {{ meal.name }}
-                                                    <span class="badge bg-primary rounded-pill">{{ meal.kcal }} ккал</span>
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card d-flex">
+                                <div class="card-header p-0">
+                                    <h5 class="card-title">Прийоми їжі</h5>
                                 </div>
+
+                                <ul class="list-group list-group-flush">
+                                    {% for meal in meals %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ meal.name }}
+                                        <span class="badge bg-primary rounded-pill">{{ meal.kcal }} ккал</span>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+
                             </div>
                         </div>
                     </div>
@@ -198,4 +383,5 @@
             </div>
         </div>
     </div>
+</div>
 {% endblock %}
